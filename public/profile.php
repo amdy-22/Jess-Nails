@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Données à afficher
 // =====================================================
 $stmt = db()->prepare(
-    'SELECT r.*, p.nom AS soin, p.duree_minutes, pr.nom AS praticienne,
+    'SELECT r.*, COALESCE(r.libelle, p.nom) AS soin, TIMESTAMPDIFF(MINUTE, r.debut, r.fin) AS duree_minutes, pr.nom AS praticienne,
             (' . sql_reservation_bloquante() . ') AS bloquee,
             (SELECT COALESCE(SUM(pa.montant_fcfa), 0) FROM paiements pa
              WHERE pa.reservation_id = r.id AND pa.statut = \'approuve\') AS paye

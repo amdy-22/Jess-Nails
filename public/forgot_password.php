@@ -12,7 +12,7 @@ const REINIT_DELAI_MIN    = 2;    // pas plus d'un email toutes les 2 min pour u
 const REINIT_MAX_SESSION  = 5;    // 5 demandes max par session et par quart d'heure
 
 if (is_logged_in()) {
-    redirect(BASE_URL . '/mon-compte.php#profil');
+    redirect(BASE_URL . '/profile.php#profil');
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

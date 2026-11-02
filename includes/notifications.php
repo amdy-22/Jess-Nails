@@ -8,7 +8,7 @@ require_once __DIR__ . '/reservation.php';   // format_date_fr()
 function notifier_reservation_confirmee(int $reservationId, bool $prevenirAdmin = true): void
 {
     $stmt = db()->prepare(
-        "SELECT r.*, p.nom AS soin, p.duree_minutes, pr.nom AS praticienne,
+        "SELECT r.*, COALESCE(r.libelle, p.nom) AS soin, TIMESTAMPDIFF(MINUTE, r.debut, r.fin) AS duree_minutes, pr.nom AS praticienne,
                 u.prenom, u.nom AS nom_client, u.email, u.telephone,
                 (SELECT pa.transaction_ref FROM paiements pa
                  WHERE pa.reservation_id = r.id AND pa.statut = 'approuve'
@@ -117,7 +117,7 @@ function notifier_reservation_confirmee(int $reservationId, bool $prevenirAdmin 
 function notifier_annulation(int $reservationId, bool $etaitConfirmee): void
 {
     $stmt = db()->prepare(
-        "SELECT r.*, p.nom AS soin, u.prenom, u.nom AS nom_client, u.email, u.telephone,
+        "SELECT r.*, COALESCE(r.libelle, p.nom) AS soin, u.prenom, u.nom AS nom_client, u.email, u.telephone,
                 (SELECT pa.montant_fcfa FROM paiements pa
                  WHERE pa.reservation_id = r.id AND pa.statut = 'approuve'
                  ORDER BY pa.id DESC LIMIT 1) AS paye
@@ -180,7 +180,7 @@ function notifier_annulation(int $reservationId, bool $etaitConfirmee): void
 function notifier_acompte_recu(int $reservationId): void
 {
     $stmt = db()->prepare(
-        "SELECT r.*, p.nom AS soin, u.prenom, u.nom AS nom_client, u.email
+        "SELECT r.*, COALESCE(r.libelle, p.nom) AS soin, u.prenom, u.nom AS nom_client, u.email
          FROM reservations r
          JOIN prestations p  ON p.id = r.prestation_id
          JOIN utilisateurs u ON u.id = r.client_id
@@ -217,7 +217,7 @@ function notifier_acompte_recu(int $reservationId): void
 function notifier_annulation_par_institut(int $reservationId): void
 {
     $stmt = db()->prepare(
-        "SELECT r.*, p.nom AS soin, u.prenom, u.nom AS nom_client, u.email
+        "SELECT r.*, COALESCE(r.libelle, p.nom) AS soin, u.prenom, u.nom AS nom_client, u.email
          FROM reservations r
          JOIN prestations p  ON p.id = r.prestation_id
          JOIN utilisateurs u ON u.id = r.client_id
@@ -255,7 +255,7 @@ function notifier_annulation_par_institut(int $reservationId): void
 function notifier_rappel(int $reservationId): bool
 {
     $stmt = db()->prepare(
-        "SELECT r.*, p.nom AS soin, p.duree_minutes, pr.nom AS praticienne, u.prenom, u.nom AS nom_client, u.email,
+        "SELECT r.*, COALESCE(r.libelle, p.nom) AS soin, TIMESTAMPDIFF(MINUTE, r.debut, r.fin) AS duree_minutes, pr.nom AS praticienne, u.prenom, u.nom AS nom_client, u.email,
                 (SELECT COALESCE(SUM(pa.montant_fcfa), 0) FROM paiements pa
                  WHERE pa.reservation_id = r.id AND pa.statut = 'approuve') AS paye
          FROM reservations r
@@ -311,7 +311,7 @@ function notifier_rappel(int $reservationId): bool
 function notifier_deplacement(int $reservationId, DateTimeImmutable $ancienDebut, bool $parInstitut): void
 {
     $stmt = db()->prepare(
-        "SELECT r.*, p.nom AS soin, p.duree_minutes, pr.nom AS praticienne,
+        "SELECT r.*, COALESCE(r.libelle, p.nom) AS soin, TIMESTAMPDIFF(MINUTE, r.debut, r.fin) AS duree_minutes, pr.nom AS praticienne,
                 u.prenom, u.nom AS nom_client, u.email, u.telephone
          FROM reservations r
          JOIN prestations p   ON p.id  = r.prestation_id

@@ -48,7 +48,7 @@ function deplacer_reservation(int $id, DateTimeImmutable $jour, string $heure, ?
     $pdo = db();
     $pdo->beginTransaction();
     try {
-        $stmt = $pdo->prepare("SELECT r.*, p.duree_minutes FROM reservations r JOIN prestations p ON p.id = r.prestation_id
+        $stmt = $pdo->prepare("SELECT r.*, TIMESTAMPDIFF(MINUTE, r.debut, r.fin) AS duree_minutes FROM reservations r JOIN prestations p ON p.id = r.prestation_id
                                WHERE r.id = ? AND r.statut = 'confirmee' FOR UPDATE");
         $stmt->execute([$id]);
         $resa = $stmt->fetch();
@@ -337,4 +337,69 @@ function montant_paye(int $reservationId): int
     $stmt = db()->prepare("SELECT COALESCE(SUM(montant_fcfa), 0) FROM paiements WHERE reservation_id = ? AND statut = 'approuve'");
     $stmt->execute([$reservationId]);
     return (int) $stmt->fetchColumn();
+}
+
+
+// =====================================================
+// Plusieurs soins dans un même rendez-vous (étape 16)
+// =====================================================
+const MAX_SOINS_PAR_RESA = 4;
+
+/** Soins demandés : "prestation" (soin principal) puis "autres[]". Uniques, dans l'ordre. */
+function ids_soins_demandes(array $source): array
+{
+    $ids = [(int) ($source['prestation'] ?? 0)];
+    foreach ((array) ($source['autres'] ?? []) as $id) {
+        $ids[] = (int) $id;
+    }
+    $ids = array_values(array_unique(array_filter($ids, fn ($id) => $id > 0)));
+    return array_slice($ids, 0, MAX_SOINS_PAR_RESA);
+}
+
+/** Réunit plusieurs soins enchaînés : durées, prix et acomptes additionnés. null si l'un n'est plus disponible. */
+function combiner_soins(array $ids): ?array
+{
+    $soins = [];
+    foreach ($ids as $id) {
+        $soin = prestation_active((int) $id);
+        if (!$soin) {
+            return null;
+        }
+        $soins[] = $soin;
+    }
+    if (!$soins) {
+        return null;
+    }
+
+    // Un soin sans acompte (0) se paie en entier en ligne : on le compte à son prix
+    $avecAcompte = array_filter($soins, fn ($s) => (int) $s['acompte_fcfa'] > 0);
+    $acompte = 0;
+    if ($avecAcompte) {
+        foreach ($soins as $s) {
+            $acompte += (int) $s['acompte_fcfa'] > 0 ? (int) $s['acompte_fcfa'] : (int) $s['prix_fcfa'];
+        }
+    }
+
+    return [
+        'id'            => (int) $soins[0]['id'],
+        'nom'           => mb_substr(implode(' + ', array_column($soins, 'nom')), 0, 255),
+        'duree_minutes' => array_sum(array_map('intval', array_column($soins, 'duree_minutes'))),
+        'prix_fcfa'     => array_sum(array_map('intval', array_column($soins, 'prix_fcfa'))),
+        'acompte_fcfa'  => $acompte,
+        'soins'         => $soins,
+        'autres'        => array_map(fn ($s) => (int) $s['id'], array_slice($soins, 1)),
+    ];
+}
+
+/** Enregistre le détail des soins (dans la transaction de l'INSERT). */
+function enregistrer_soins_reservation(int $reservationId, array $combinaison): void
+{
+    $stmt = db()->prepare(
+        'INSERT INTO reservation_prestations
+            (reservation_id, ordre, prestation_id, nom, duree_minutes, prix_fcfa, acompte_fcfa)
+         VALUES (?, ?, ?, ?, ?, ?, ?)'
+    );
+    foreach ($combinaison['soins'] as $i => $s) {
+        $stmt->execute([$reservationId, $i + 1, $s['id'], $s['nom'], $s['duree_minutes'], $s['prix_fcfa'], $s['acompte_fcfa']]);
+    }
 }

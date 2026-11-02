@@ -144,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ---------- Supprimer (seulement si jamais réservé) ----------
     if ($action === 'supprimer') {
         $id = (int) $_POST['id'];
-        $nb = db()->prepare('SELECT COUNT(*) FROM reservations WHERE prestation_id = ?');
+        $nb = db()->prepare('SELECT COUNT(*) FROM reservation_prestations WHERE prestation_id = ?');
         $nb->execute([$id]);
         if ((int) $nb->fetchColumn() > 0) {
             flash('erreur', 'Ce soin a déjà été réservé : il ne peut pas être supprimé. Désactive-le pour le masquer du site.');
@@ -227,8 +227,9 @@ $categories = db()->query(
 
 $prestations = db()->query(
     "SELECT p.*, c.nom AS categorie,
-            (SELECT COUNT(*) FROM reservations r WHERE r.prestation_id = p.id AND r.statut = 'confirmee' AND r.debut > NOW()) AS a_venir,
-            (SELECT COUNT(*) FROM reservations r WHERE r.prestation_id = p.id) AS total_resas
+            (SELECT COUNT(*) FROM reservation_prestations rp JOIN reservations r ON r.id = rp.reservation_id
+              WHERE rp.prestation_id = p.id AND r.statut = 'confirmee' AND r.debut > NOW()) AS a_venir,
+            (SELECT COUNT(*) FROM reservation_prestations rp WHERE rp.prestation_id = p.id) AS total_resas
      FROM prestations p JOIN categories c ON c.id = p.categorie_id
      ORDER BY c.ordre, c.id, p.prix_fcfa"
 )->fetchAll();

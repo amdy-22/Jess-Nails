@@ -125,7 +125,7 @@ function badge_admin(array $r): string
 /** Requête SQL commune : réservation + soin + cliente + praticienne + paiement + absences. */
 function sql_reservations_admin(): string
 {
-    return 'SELECT r.*, p.nom AS soin, p.duree_minutes, pr.nom AS praticienne,
+    return 'SELECT r.*, COALESCE(r.libelle, p.nom) AS soin, TIMESTAMPDIFF(MINUTE, r.debut, r.fin) AS duree_minutes, pr.nom AS praticienne,
                    u.prenom, u.nom AS nom_client, u.telephone, u.email,
                    (' . sql_reservation_bloquante() . ') AS bloquee,
                    (SELECT COALESCE(SUM(pa.montant_fcfa), 0) FROM paiements pa

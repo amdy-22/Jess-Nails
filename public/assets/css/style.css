@@ -855,3 +855,14 @@ input, select, textarea {
     .whatsapp-flottant { padding: 14px; right: 14px; bottom: 14px; }
     .whatsapp-flottant span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 }
+
+/* ---------- Plusieurs soins (étape 16) ---------- */
+.soins-supp { border: 1px dashed var(--ligne); border-radius: var(--rayon); padding: 10px 14px; }
+.soins-supp summary { cursor: pointer; font-weight: 600; font-size: .9rem; }
+.soins-supp[open] summary { margin-bottom: 8px; }
+.soins-supp-cat { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--discret); margin: 12px 0 4px !important; }
+.soin-case { font-weight: 500; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 10px; align-items: start; padding: 6px 0; font-size: .92rem; }
+.soin-case input { margin-top: 3px; }
+.soin-case .discret { grid-column: 2; font-size: .8rem; }
+.soin-case:has(input:disabled) { opacity: .5; }
+.total-soins { background: var(--accent-doux); border-radius: var(--rayon); padding: 8px 12px; font-size: .9rem; }

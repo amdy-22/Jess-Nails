@@ -1,7 +1,7 @@
 <?php
 /**
  * Réservation d'une séance (clients connectés uniquement).
- * 1. choix du soin et de la date (GET)  2. choix du créneau (POST)
+ * 1. choix du ou des soins et de la date (GET)  2. choix du créneau (POST)
  */
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/reservation.php';
@@ -22,9 +22,10 @@ foreach ($soins as $s) {
 
 // Choix en cours (GET pour l'affichage, POST pour l'enregistrement)
 $source       = $_SERVER['REQUEST_METHOD'] === 'POST' ? $_POST : $_GET;
-$prestationId = (int) ($source['prestation'] ?? 0);
+$idsSoins     = ids_soins_demandes($source);
+$prestationId = $idsSoins[0] ?? 0;
 $dateChoisie  = trim($source['date'] ?? '');
-$prestation   = $prestationId ? prestation_active($prestationId) : null;
+$prestation   = combiner_soins($idsSoins);   // un ou plusieurs soins, enchaînés
 $jour         = $dateChoisie !== '' ? jour_reservable($dateChoisie) : null;
 
 // Praticienne choisie (0 = sans préférence)
@@ -40,7 +41,7 @@ $dateMax    = $aujourdhui->modify('+' . HORIZON_JOURS . ' days');
 $erreurs    = [];
 
 if ($prestationId && !$prestation) {
-    $erreurs[] = 'Ce soin n\'est plus disponible. Choisis-en un autre.';
+    $erreurs[] = 'Un des soins choisis n\'est plus disponible. Choisis-en un autre.';
 }
 if ($dateChoisie !== '' && !$jour) {
     $erreurs[] = 'Choisis une date entre aujourd\'hui et le ' . format_date_fr($dateMax) . '.';
@@ -72,16 +73,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $stmt = $pdo->prepare(
                     'INSERT INTO reservations
-                        (client_id, prestation_id, praticienne_id, debut, fin, prix_fcfa, acompte_fcfa, note_client)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+                        (client_id, prestation_id, libelle, praticienne_id, debut, fin, prix_fcfa, acompte_fcfa, note_client)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
                 );
                 $stmt->execute([
-                    $user['id'], $prestation['id'], $libres[$heure],
+                    $user['id'], $prestation['id'], $prestation['nom'], $libres[$heure],
                     $debut->format('Y-m-d H:i:s'), $fin->format('Y-m-d H:i:s'),
                     $prestation['prix_fcfa'], $prestation['acompte_fcfa'],
                     $note !== '' ? $note : null,
                 ]);
                 $reservationId = (int) $pdo->lastInsertId();
+                enregistrer_soins_reservation($reservationId, $prestation);
                 $pdo->commit();
 
                 redirect(BASE_URL . '/paiement/initier.php?reservation=' . $reservationId);
@@ -122,7 +124,7 @@ require __DIR__ . '/../includes/header.php';
 <div class="resa-grille">
     <!-- Étape 1 : soin + date -->
     <form method="get" class="resa-bloc" id="form-choix">
-        <h2><span class="num">1</span> Soin et date</h2>
+        <h2><span class="num">1</span> Soins et date</h2>
 
         <div class="champ">
             <label for="prestation">Soin</label>
@@ -140,25 +142,25 @@ require __DIR__ . '/../includes/header.php';
             </select>
         </div>
 
+        <?php require __DIR__ . '/../includes/choix_soins.php'; ?>
+
         <div class="champ">
             <label for="date">Date</label>
             <input type="date" id="date" name="date" required
                    value="<?= e($jour ? $jour->format('Y-m-d') : '') ?>"
                    min="<?= $aujourdhui->format('Y-m-d') ?>" max="<?= $dateMax->format('Y-m-d') ?>">
         </div>
-        <?php if ($praticiennesActives): ?>
-            <div class="champ">
-                <label for="praticienne">Praticienne (facultatif)</label>
-                <select id="praticienne" name="praticienne">
-                    <option value="">Sans préférence</option>
-                    <?php foreach ($praticiennesActives as $pr): ?>
-                        <option value="<?= (int) $pr['id'] ?>" <?= $praticienneId === (int) $pr['id'] ? 'selected' : '' ?>>
-                            <?= e($pr['nom']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-        <?php endif; ?>
+
+        <div class="champ">
+            <label for="praticienne">Praticienne</label>
+            <select id="praticienne" name="praticienne">
+                <option value="0">Sans préférence</option>
+                <?php foreach ($praticiennesActives as $pr): ?>
+                    <option value="<?= (int) $pr['id'] ?>" <?= $praticienneId === (int) $pr['id'] ? 'selected' : '' ?>><?= e($pr['nom']) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
         <button type="submit" class="btn">Voir les horaires libres</button>
     </form>
 
@@ -173,14 +175,18 @@ require __DIR__ . '/../includes/header.php';
             <p class="alerte alerte-info">L'institut est fermé ce jour-là (<?= e($fermeture) ?>). Choisis une autre date.</p>
 
         <?php elseif (!$creneaux): ?>
-            <p class="alerte alerte-info">Plus aucun horaire libre le <?= e(format_date_fr($jour)) ?> pour ce soin. Essaie une autre date.</p>
+            <p class="alerte alerte-info">Plus aucun horaire libre le <?= e(format_date_fr($jour)) ?> pour ce soin<?= $nomPraticienne ? ' avec ' . e($nomPraticienne) . '. Essaie « Sans préférence » ou' : '. Essaie' ?> une autre date.</p>
 
         <?php else: ?>
             <form method="post">
                 <?= csrf_field() ?>
                 <input type="hidden" name="prestation" value="<?= (int) $prestation['id'] ?>">
+                <?php foreach ($prestation['autres'] as $idAutre): ?>
+                    <input type="hidden" name="autres[]" value="<?= $idAutre ?>">
+                <?php endforeach; ?>
                 <input type="hidden" name="date" value="<?= e($jour->format('Y-m-d')) ?>">
                 <input type="hidden" name="praticienne" value="<?= $praticienneId ?>">
+
                 <p class="discret">Le <?= e(format_date_fr($jour)) ?> · <?= e($prestation['nom']) ?> (<?= format_duree((int) $prestation['duree_minutes']) ?>)
                     · <?= $nomPraticienne ? 'avec ' . e($nomPraticienne) : 'avec la praticienne disponible' ?></p>
 
@@ -204,18 +210,19 @@ require __DIR__ . '/../includes/header.php';
                 </div>
 
                 <div class="recap-prix">
-                    <div><span>Prix du soin</span><strong><?= format_fcfa((int) $prestation['prix_fcfa']) ?></strong></div>
+                    <div><span><?= count($prestation['soins']) > 1 ? 'Prix des ' . count($prestation['soins']) . ' soins' : 'Prix du soin' ?></span><strong><?= format_fcfa((int) $prestation['prix_fcfa']) ?></strong></div>
                     <?php if ($prestation['acompte_fcfa'] > 0): ?>
                         <div class="discret"><span>Acompte en ligne (facultatif)</span><span><?= format_fcfa((int) $prestation['acompte_fcfa']) ?></span></div>
                     <?php endif; ?>
                     <div class="discret"><span>Tu choisis à l'étape suivante : acompte en ligne ou tout sur place.</span></div>
                 </div>
 
-                                <?php require __DIR__ . '/../includes/conditions_resume.php'; ?>
+                <?php require __DIR__ . '/../includes/conditions_resume.php'; ?>
+
                 <button type="submit" class="btn btn-plein btn-large">Réserver ce créneau</button>
             </form>
         <?php endif; ?>
     </div>
 </div>
 
-<?php require __DIR__ . '/../includes/footer.php'; ?>
+<?php require __DIR__ . '/../includes/footer.php';

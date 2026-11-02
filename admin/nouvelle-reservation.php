@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ---------- Enregistrer le rendez-vous ----------
     if ($action === 'reserver') {
         $client      = cliente_par_id((int) ($_POST['client'] ?? 0));
-        $prestation  = prestation_active((int) ($_POST['prestation'] ?? 0));
+        $prestation  = combiner_soins(ids_soins_demandes($_POST));
         $jour        = jour_reservable((string) ($_POST['date'] ?? ''));
         $pratId      = (int) ($_POST['praticienne'] ?? 0);
         $heure       = (string) ($_POST['heure'] ?? '');
@@ -83,6 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $note        = mb_substr(trim($_POST['note'] ?? ''), 0, 255);
         $envoyerMail = isset($_POST['envoyer_email']);
         $retour      = $urlPage . '?' . http_build_query(['client' => $client['id'] ?? 0, 'prestation' => $prestation['id'] ?? 0,
+                                                         'autres' => $prestation['autres'] ?? [],
                                                          'date' => $_POST['date'] ?? '', 'praticienne' => $pratId]);
 
         if (!$client || !$prestation || !$jour || !preg_match('/^\d{2}:\d{2}$/', $heure) || !isset(SOURCES_ADMIN[$source])) {
@@ -103,14 +104,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $fin   = $debut->modify('+' . (int) $prestation['duree_minutes'] . ' minutes');
             $pdo->prepare(
                 "INSERT INTO reservations
-                    (client_id, prestation_id, praticienne_id, debut, fin, prix_fcfa, acompte_fcfa, statut, source, note_client)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmee', ?, ?)"
+                    (client_id, prestation_id, libelle, praticienne_id, debut, fin, prix_fcfa, acompte_fcfa, statut, source, note_client)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'confirmee', ?, ?)"
             )->execute([
-                $client['id'], $prestation['id'], $libres[$heure],
+                $client['id'], $prestation['id'], $prestation['nom'], $libres[$heure],
                 $debut->format('Y-m-d H:i:s'), $fin->format('Y-m-d H:i:s'),
                 $prestation['prix_fcfa'], $prestation['acompte_fcfa'], $source, $note !== '' ? $note : null,
             ]);
             $id = (int) $pdo->lastInsertId();
+            enregistrer_soins_reservation($id, $prestation);
             $pdo->commit();
         } catch (Throwable $e) {
             if ($pdo->inTransaction()) {
@@ -169,7 +171,7 @@ $soins = db()->query(
 )->fetchAll();
 $praticiennes = db()->query('SELECT id, nom FROM praticiennes WHERE actif = 1 ORDER BY nom')->fetchAll();
 
-$prestation = !empty($_GET['prestation']) ? prestation_active((int) $_GET['prestation']) : null;
+$prestation = combiner_soins(ids_soins_demandes($_GET));
 $aujourdhui = new DateTimeImmutable('today');
 $jour       = jour_reservable((string) ($_GET['date'] ?? $aujourdhui->format('Y-m-d')));
 $pratId     = (int) ($_GET['praticienne'] ?? 0);
@@ -253,7 +255,7 @@ require __DIR__ . '/../includes/admin_header.php';
     <?php if ($client): ?>
     <!-- 2. Soin, date, praticienne -->
     <form method="get" class="resa-bloc" id="form-choix">
-        <h2><span class="num">2</span> Soin et date</h2>
+        <h2><span class="num">2</span> Soins et date</h2>
         <input type="hidden" name="client" value="<?= (int) $client['id'] ?>">
         <div class="ligne-3">
             <div class="champ">
@@ -285,6 +287,7 @@ require __DIR__ . '/../includes/admin_header.php';
                 </select>
             </div>
         </div>
+        <?php require __DIR__ . '/../includes/choix_soins.php'; ?>
         <button type="submit" class="btn">Voir les horaires libres</button>
     </form>
 
@@ -304,6 +307,9 @@ require __DIR__ . '/../includes/admin_header.php';
                 <input type="hidden" name="action" value="reserver">
                 <input type="hidden" name="client" value="<?= (int) $client['id'] ?>">
                 <input type="hidden" name="prestation" value="<?= (int) $prestation['id'] ?>">
+                <?php foreach ($prestation['autres'] as $idAutre): ?>
+                    <input type="hidden" name="autres[]" value="<?= $idAutre ?>">
+                <?php endforeach; ?>
                 <input type="hidden" name="date" value="<?= e($jour->format('Y-m-d')) ?>">
                 <input type="hidden" name="praticienne" value="<?= $pratId ?>">
 

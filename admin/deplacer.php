@@ -10,7 +10,7 @@ require_admin();
 $id = (int) ($_POST['reservation'] ?? $_GET['reservation'] ?? 0);
 
 $stmt = db()->prepare(
-    'SELECT r.*, p.nom AS soin, p.duree_minutes, pr.nom AS praticienne, u.prenom, u.nom AS nom_client, u.email, u.telephone
+    'SELECT r.*, COALESCE(r.libelle, p.nom) AS soin, TIMESTAMPDIFF(MINUTE, r.debut, r.fin) AS duree_minutes, pr.nom AS praticienne, u.prenom, u.nom AS nom_client, u.email, u.telephone
      FROM reservations r
      JOIN prestations p   ON p.id  = r.prestation_id
      JOIN praticiennes pr ON pr.id = r.praticienne_id

@@ -14,7 +14,7 @@ $client = current_user();
 $id     = (int) ($_POST['reservation'] ?? $_GET['reservation'] ?? 0);
 
 $stmt = db()->prepare(
-    'SELECT r.*, p.nom AS soin, p.duree_minutes, pr.nom AS praticienne
+    'SELECT r.*, COALESCE(r.libelle, p.nom) AS soin, TIMESTAMPDIFF(MINUTE, r.debut, r.fin) AS duree_minutes, pr.nom AS praticienne
      FROM reservations r
      JOIN prestations p   ON p.id  = r.prestation_id
      JOIN praticiennes pr ON pr.id = r.praticienne_id
