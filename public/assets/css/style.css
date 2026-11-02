@@ -643,3 +643,9 @@ input[type="time"]::-webkit-date-and-time-value {
     text-align: left;          /* Safari centre la date par défaut */
     min-height: 1.4em;
 }
+
+/* iPhone : Safari zoome sur tout champ dont le texte fait moins de 16 px.
+   On impose 16 px minimum à tous les champs pour éviter ce zoom. */
+input, select, textarea {
+    font-size: max(16px, 1rem);
+}
