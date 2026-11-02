@@ -24,7 +24,7 @@ function admin_lien(string $page, string $fichier, string $libelle, string $acti
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=3">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=4">
 </head>
 <body class="admin">
 
@@ -32,7 +32,10 @@ function admin_lien(string $page, string $fichier, string $libelle, string $acti
     <div class="conteneur conteneur-large header-inner">
         <a href="<?= ADMIN_URL ?>/index.php" class="logo"><?= e(APP_NAME) ?> <span class="logo-admin">admin</span></a>
 
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principal">Menu</button>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principal" aria-label="Ouvrir le menu">
+            <span class="menu-icone" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span class="menu-texte">Menu</span>
+        </button>
 
         <nav id="menu-principal" class="nav">
             <ul class="nav-liens">

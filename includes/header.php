@@ -22,7 +22,7 @@ function nav_class(string $page, string $active): string
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=3">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=4">
 </head>
 <body>
 
@@ -30,8 +30,9 @@ function nav_class(string $page, string $active): string
     <div class="conteneur header-inner">
         <a href="<?= BASE_URL ?>/index.php" class="logo"><?= e(APP_NAME) ?></a>
 
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principal">
-            Menu
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principal" aria-label="Ouvrir le menu">
+            <span class="menu-icone" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span class="menu-texte">Menu</span>
         </button>
 
         <nav id="menu-principal" class="nav">
@@ -47,7 +48,7 @@ function nav_class(string $page, string $active): string
                         <li><a href="<?= ADMIN_URL ?>/index.php">Administration</a></li>
                     <?php endif; ?>
                     <li><a href="<?= BASE_URL ?>/profile.php"<?= nav_class('compte', $activePage) ?>>
-                        <?= e($user['prenom']) ?></a></li>
+                        <span class="seulement-mobile">Mon compte · </span><?= e($user['prenom']) ?></a></li>
                     <li>
                         <form action="<?= BASE_URL ?>/deconnexion.php" method="post" class="form-inline">
                             <?= csrf_field() ?>

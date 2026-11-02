@@ -4,9 +4,26 @@ document.addEventListener('DOMContentLoaded', function () {
     var menu = document.getElementById('menu-principal');
     if (!bouton || !menu) return;
 
-    bouton.addEventListener('click', function () {
-        var ouvert = menu.classList.toggle('ouvert');
-        bouton.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+    function basculer(ouvrir) {
+        menu.classList.toggle('ouvert', ouvrir);
+        bouton.setAttribute('aria-expanded', ouvrir ? 'true' : 'false');
+        bouton.setAttribute('aria-label', ouvrir ? 'Fermer le menu' : 'Ouvrir le menu');
+    }
+
+    bouton.addEventListener('click', function (e) {
+        e.stopPropagation();
+        basculer(!menu.classList.contains('ouvert'));
+    });
+
+    // Fermer en touchant en dehors du menu, avec la touche Échap, ou après un clic sur un lien
+    document.addEventListener('click', function (e) {
+        if (menu.classList.contains('ouvert') && !menu.contains(e.target)) basculer(false);
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && menu.classList.contains('ouvert')) { basculer(false); bouton.focus(); }
+    });
+    menu.querySelectorAll('a').forEach(function (lien) {
+        lien.addEventListener('click', function () { basculer(false); });
     });
 });
 
