@@ -1,3 +1,8 @@
+<?php
+require_once __DIR__ . '/contact.php';
+$lienWhatsapp = lien_whatsapp($messageWhatsapp ?? null);
+?>
+
 </div>
 </main>
 
@@ -14,6 +19,19 @@
             <?php endforeach; ?>
         </div>
         <div>
+            <div>
+                <p class="footer-titre">Contact</p>
+                <?php if ($lienWhatsapp): ?>
+                    <p><a href="<?= e($lienWhatsapp) ?>" target="_blank" rel="noopener">WhatsApp</a></p>
+                <?php endif; ?>
+                <?php if (SALON_TELEPHONE !== ''): ?>
+                    <p class="discret"><?= e(SALON_TELEPHONE) ?></p>
+                <?php endif; ?>
+                <?php if (SALON_ADRESSE !== ''): ?>
+                    <p class="discret"><?= e(SALON_ADRESSE) ?></p>
+                <?php endif; ?>
+                <p><a href="<?= BASE_URL ?>/contact.php">Plan d'accès</a></p>
+            </div>
             <p class="footer-titre">Paiement</p>
             <p class="discret">Sur place, ou acompte en ligne par Mobile Money</p>
         </div>
@@ -28,6 +46,11 @@
     </div>
 </footer>
 
+<?php if ($lienWhatsapp): ?>
+    <a href="<?= e($lienWhatsapp) ?>" class="whatsapp-flottant" target="_blank" rel="noopener" aria-label="Nous écrire sur WhatsApp">
+        <?= icone_discussion() ?><span>WhatsApp</span>
+    </a>
+<?php endif; ?>
 <script src="<?= BASE_URL ?>/assets/js/app.js"></script>
 </body>
 </html>

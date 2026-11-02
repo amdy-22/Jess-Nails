@@ -40,6 +40,7 @@ function nav_class(string $page, string $active): string
                 <li><a href="<?= BASE_URL ?>/index.php"<?= nav_class('accueil', $activePage) ?>>Accueil</a></li>
                 <li><a href="<?= BASE_URL ?>/prestations.php"<?= nav_class('prestations', $activePage) ?>>Prestations</a></li>
                 <li><a href="<?= BASE_URL ?>/reserver.php"<?= nav_class('reserver', $activePage) ?>>Réserver</a></li>
+                <li><a href="<?= BASE_URL ?>/contact.php"<?= nav_class('contact', $activePage) ?>>Contact</a></li>
             </ul>
 
             <ul class="nav-compte">

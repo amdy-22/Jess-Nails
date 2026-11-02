@@ -4,6 +4,7 @@
  * Chaque soin mène à reserver.php?prestation=ID (connexion demandée à ce moment-là).
  */
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/contact.php';
 
 $lignes = db()->query(
     'SELECT c.id AS cat_id, c.nom AS cat_nom, c.slug,
@@ -81,6 +82,9 @@ require __DIR__ . '/../includes/header.php';
                     <a href="<?= BASE_URL ?>/reserver.php?prestation=<?= (int) $soin['id'] ?>" class="btn btn-plein">
                         Réserver ce soin
                     </a>
+                    <?php if ($q = lien_whatsapp('Bonjour, j\'ai une question sur le soin « ' . $soin['nom'] . ' ».')): ?>
+                        <a href="<?= e($q) ?>" class="lien-question" target="_blank" rel="noopener">Une question sur ce soin ?</a>
+                    <?php endif; ?>
                 </article>
             <?php endforeach; ?>
         </div>

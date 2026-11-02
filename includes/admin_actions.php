@@ -5,6 +5,7 @@
  */
 require_once __DIR__ . '/reservation.php';
 require_once __DIR__ . '/notifications.php';
+require_once __DIR__ . '/contact.php';
 
 /** Actions possibles sur une réservation, selon son état. */
 function actions_admin(array $r): array
@@ -190,6 +191,12 @@ function afficher_tableau(array $lignes, string $retour, bool $avecDate): void
                             <span class="badge badge-annule" title="Absences passées"><?= (int) $r['nb_absences'] ?> abs.</span>
                         <?php endif; ?>
                         <br><a class="discret" href="tel:<?= e($r['telephone']) ?>"><?= e($r['telephone']) ?></a>
+                        <?php $wa = lien_whatsapp(
+                            'Bonjour ' . $r['prenom'] . ', ici ' . APP_NAME . ' au sujet de votre rendez-vous du '
+                            . format_date_fr($debut, true) . ' (' . $r['soin'] . ').',
+                            (string) $r['telephone']
+                        ); ?>
+                        <?php if ($wa): ?> · <a class="lien-whatsapp" href="<?= e($wa) ?>" target="_blank" rel="noopener">WhatsApp</a><?php endif; ?>
                     </td>
                     <td><?= e($r['soin']) ?><?= tag_source($r) ?><?php if ($r['note_client']): ?><br><span class="discret petit-note">« <?= e($r['note_client']) ?> »</span><?php endif; ?></td>
                     <td><?= e($r['praticienne']) ?></td>
