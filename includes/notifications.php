@@ -302,3 +302,63 @@ function notifier_rappel(int $reservationId): bool
         ADMIN_NOTIFICATION_EMAIL !== '' ? ['email' => ADMIN_NOTIFICATION_EMAIL] : null
     );
 }
+
+
+/**
+ * Rendez-vous déplacé : email à la cliente (ancien et nouvel horaire),
+ * et à l'admin quand c'est la cliente qui a déplacé.
+ */
+function notifier_deplacement(int $reservationId, DateTimeImmutable $ancienDebut, bool $parInstitut): void
+{
+    $stmt = db()->prepare(
+        "SELECT r.*, p.nom AS soin, p.duree_minutes, pr.nom AS praticienne,
+                u.prenom, u.nom AS nom_client, u.email, u.telephone
+         FROM reservations r
+         JOIN prestations p   ON p.id  = r.prestation_id
+         JOIN praticiennes pr ON pr.id = r.praticienne_id
+         JOIN utilisateurs u  ON u.id  = r.client_id
+         WHERE r.id = ?"
+    );
+    $stmt->execute([$reservationId]);
+    $r = $stmt->fetch();
+    if (!$r) {
+        return;
+    }
+    $nouveau = new DateTimeImmutable($r['debut']);
+    $ancien  = format_date_fr($ancienDebut, true);
+    $lignes  = [
+        'Soin'             => e($r['soin']) . ' (' . format_duree((int) $r['duree_minutes']) . ')',
+        'Ancien horaire'   => '<span style="text-decoration:line-through;color:#6e5f6c;">' . e($ancien) . '</span>',
+        'Nouvel horaire'   => e(format_date_fr($nouveau, true)),
+        'Avec'             => e($r['praticienne']),
+    ];
+
+    // Cliente
+    if ($r['email']) {
+        $intro = $parInstitut
+            ? '<p>L\'institut a déplacé ton rendez-vous. Voici le nouvel horaire :</p>'
+            : '<p>Ton rendez-vous est bien déplacé. Voici le nouvel horaire :</p>';
+        envoyer_email(
+            [['email' => $r['email'], 'name' => $r['prenom'] . ' ' . $r['nom_client']]],
+            'Rendez-vous déplacé : ' . $r['soin'] . ' le ' . format_date_fr($nouveau, true),
+            gabarit_email('Rendez-vous déplacé', '<p>Bonjour ' . e($r['prenom']) . ',</p>' . $intro . tableau_email($lignes)
+                . ($parInstitut ? '<p>Si cet horaire ne te convient pas, réponds simplement à cet email.</p>' : '')),
+            ADMIN_NOTIFICATION_EMAIL !== '' ? ['email' => ADMIN_NOTIFICATION_EMAIL] : null
+        );
+    }
+
+    // Admin : seulement quand c'est la cliente qui a déplacé
+    if ($parInstitut) {
+        return;
+    }
+    $admins = ADMIN_NOTIFICATION_EMAIL !== ''
+        ? [['email' => ADMIN_NOTIFICATION_EMAIL]]
+        : array_map(fn($a) => ['email' => $a['email']], db()->query("SELECT email FROM utilisateurs WHERE role = 'admin'")->fetchAll());
+    envoyer_email(
+        $admins,
+        'Rendez-vous déplacé : ' . $r['prenom'] . ' ' . $r['nom_client'] . ' · ' . format_date_fr($nouveau, true),
+        gabarit_email('Rendez-vous déplacé par la cliente',
+            '<p>' . e($r['prenom'] . ' ' . $r['nom_client']) . ' (' . e($r['telephone']) . ') a déplacé son rendez-vous.</p>' . tableau_email($lignes)),
+        $r['email'] ? ['email' => $r['email']] : null
+    );
+}

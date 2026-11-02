@@ -797,3 +797,9 @@ input, select, textarea {
     .planning-repos, .planning-ferme-institut { grid-column: auto; }
     .planning-heures:nth-of-type(2)::before { content: "Pause :"; font-size: .8rem; color: var(--discret); margin-right: 4px; }
 }
+
+/* ---------- Déplacer un rendez-vous (étape 13) ---------- */
+.creneaux label.creneau-actuel {
+    background: repeating-linear-gradient(135deg, var(--accent-doux), var(--accent-doux) 6px, var(--surface) 6px, var(--surface) 12px);
+    color: var(--discret); cursor: not-allowed; text-decoration: line-through;
+}

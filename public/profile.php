@@ -161,6 +161,10 @@ function carte_rdv(array $r, bool $avecActions): void
                 <a class="lien-discret" href="<?= BASE_URL ?>/paiement/initier.php?reservation=<?= (int) $r['id'] ?>">Payer l'acompte en ligne</a>
             <?php endif; ?>
 
+            <?php if ($avecActions && deplacement_possible($r)): ?>
+                <a class="lien-discret" href="<?= BASE_URL ?>/deplacer.php?reservation=<?= (int) $r['id'] ?>">Déplacer</a>
+            <?php endif; ?>
+
             <?php if ($avecActions && annulation_possible($r, (bool) $r['bloquee'])): ?>
                 <form method="post" data-confirmer="Annuler ce rendez-vous du <?= e(format_date_fr($debut, true)) ?> ?">
                     <?= csrf_field() ?>

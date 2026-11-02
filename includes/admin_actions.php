@@ -22,6 +22,9 @@ function actions_admin(array $r): array
     if (in_array($r['statut'], ['terminee', 'absente'], true)) {
         $actions['confirmee'] = 'Remettre à confirmé';
     }
+    if ($r['statut'] === 'confirmee' && new DateTimeImmutable($r['fin']) > new DateTimeImmutable()) {
+        $actions['deplacer'] = 'Déplacer';
+    }
     if ($aVenir && ($r['statut'] === 'confirmee' || ($r['statut'] === 'en_attente_paiement' && $r['bloquee']))) {
         $actions['annuler'] = 'Annuler';
     }
@@ -89,6 +92,10 @@ function boutons_actions_admin(array $r, string $retour): string
 {
     $html = '';
     foreach (actions_admin($r) as $action => $libelle) {
+        if ($action === 'deplacer') {   // simple lien vers la page de déplacement
+            $html .= '<a class="btn-action" href="' . ADMIN_URL . '/deplacer.php?reservation=' . (int) $r['id'] . '">Déplacer</a>';
+            continue;
+        }
         $confirmer = in_array($action, ['annuler', 'absente', 'rembourse'], true)
             ? ' data-confirmer="' . e($libelle . ' : ' . $r['prenom'] . ' ' . $r['nom_client'] . ', ' . format_date_fr(new DateTimeImmutable($r['debut']), true) . ' ?') . '"'
             : '';

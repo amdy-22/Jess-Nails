@@ -50,3 +50,13 @@ document.addEventListener('submit', function (e) {
         e.preventDefault();
     }
 });
+
+
+// Formulaires qui se renvoient seuls quand on change un champ (ex. date du déplacement)
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('form[data-envoi-auto]').forEach(function (form) {
+        form.addEventListener('change', function () {
+            if (form.checkValidity()) form.submit();
+        });
+    });
+});

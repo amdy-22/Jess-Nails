@@ -32,6 +32,51 @@ function statut_affiche(array $resa, bool $bloquee): array
     };
 }
 
+/** La cliente peut-elle encore déplacer elle-même ? (même délai que l'annulation) */
+function deplacement_possible(array $resa): bool
+{
+    $limite = (new DateTimeImmutable())->modify('+' . DELAI_ANNULATION_H . ' hours');
+    return $resa['statut'] === 'confirmee' && new DateTimeImmutable($resa['debut']) > $limite;
+}
+
+/**
+ * Déplace un rendez-vous confirmé vers un nouvel horaire, sans risque de double réservation.
+ * Renvoie l'ancien début (pour l'email) ou null si le créneau n'est plus libre.
+ */
+function deplacer_reservation(int $id, DateTimeImmutable $jour, string $heure, ?int $praticienneId, int $delaiMinutes): ?DateTimeImmutable
+{
+    $pdo = db();
+    $pdo->beginTransaction();
+    try {
+        $stmt = $pdo->prepare("SELECT r.*, p.duree_minutes FROM reservations r JOIN prestations p ON p.id = r.prestation_id
+                               WHERE r.id = ? AND r.statut = 'confirmee' FOR UPDATE");
+        $stmt->execute([$id]);
+        $resa = $stmt->fetch();
+        if (!$resa) {
+            $pdo->rollBack();
+            return null;
+        }
+        $prestation = ['id' => $resa['prestation_id'], 'duree_minutes' => $resa['duree_minutes']];
+        $libres = creneaux_disponibles($prestation, $jour, true, $praticienneId, $delaiMinutes, $id);
+        if (!isset($libres[$heure])) {
+            $pdo->rollBack();
+            return null;
+        }
+        $debut = new DateTimeImmutable($jour->format('Y-m-d') . ' ' . $heure);
+        $fin   = $debut->modify('+' . (int) $resa['duree_minutes'] . ' minutes');
+        // Nouveau créneau : le rappel repart pour le nouvel horaire
+        $pdo->prepare('UPDATE reservations SET debut = ?, fin = ?, praticienne_id = ?, rappel_envoye_le = NULL WHERE id = ?')
+            ->execute([$debut->format('Y-m-d H:i:s'), $fin->format('Y-m-d H:i:s'), $libres[$heure], $id]);
+        $pdo->commit();
+        return new DateTimeImmutable($resa['debut']);
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        throw $e;
+    }
+}
+
 /** La cliente peut-elle encore annuler elle-même ? */
 function annulation_possible(array $resa, bool $bloquee): bool
 {
@@ -105,7 +150,7 @@ function fermeture_du_jour(DateTimeImmutable $jour): ?string
  * $verrouiller = true : à utiliser DANS une transaction au moment d'enregistrer,
  * pour que deux clientes ne prennent pas la même place en même temps.
  */
-function creneaux_disponibles(array $prestation, DateTimeImmutable $jour, bool $verrouiller = false, ?int $praticienneId = null, int $delaiMinutes = DELAI_MIN_MINUTES): array
+function creneaux_disponibles(array $prestation, DateTimeImmutable $jour, bool $verrouiller = false, ?int $praticienneId = null, int $delaiMinutes = DELAI_MIN_MINUTES, ?int $ignorerReservationId = null): array
 {
     if (fermeture_du_jour($jour) !== null) {
         return [];
@@ -142,9 +187,9 @@ function creneaux_disponibles(array $prestation, DateTimeImmutable $jour, bool $
     // Rendez-vous qui occupent déjà la journée (confirmés ou encore bloqués)
     $stmt = db()->prepare(
         'SELECT r.praticienne_id, r.debut, r.fin FROM reservations r
-         WHERE r.debut < ? AND r.fin > ? AND ' . sql_reservation_bloquante()
+         WHERE r.debut < ? AND r.fin > ? AND r.id <> ? AND ' . sql_reservation_bloquante()
     );
-    $stmt->execute([$fermeture->format('Y-m-d H:i:s'), $ouverture->format('Y-m-d H:i:s')]);
+    $stmt->execute([$fermeture->format('Y-m-d H:i:s'), $ouverture->format('Y-m-d H:i:s'), (int) $ignorerReservationId]);
 
     $occupe = [];
     $charge = array_fill_keys($praticiennes, 0);   // minutes déjà réservées ce jour, par praticienne
