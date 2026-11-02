@@ -211,6 +211,7 @@ require __DIR__ . '/../includes/header.php';
                     <div class="discret"><span>Tu choisis à l'étape suivante : acompte en ligne ou tout sur place.</span></div>
                 </div>
 
+                                <?php require __DIR__ . '/../includes/conditions_resume.php'; ?>
                 <button type="submit" class="btn btn-plein btn-large">Réserver ce créneau</button>
             </form>
         <?php endif; ?>

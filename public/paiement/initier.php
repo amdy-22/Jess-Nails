@@ -161,6 +161,7 @@ require __DIR__ . '/../../includes/header.php';
             Ce créneau t'est réservé jusqu'à <?= $expireA->format('H\hi') ?>. Choisis comment tu veux régler pour confirmer.
         </p>
 
+                <?php require __DIR__ . '/../../includes/conditions_resume.php'; ?>
         <div class="choix-reglement">
             <form method="post" class="choix">
                 <?= csrf_field() ?>

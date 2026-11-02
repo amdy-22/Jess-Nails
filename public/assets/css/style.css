@@ -803,3 +803,26 @@ input, select, textarea {
     background: repeating-linear-gradient(135deg, var(--accent-doux), var(--accent-doux) 6px, var(--surface) 6px, var(--surface) 12px);
     color: var(--discret); cursor: not-allowed; text-decoration: line-through;
 }
+
+/* ---------- Pages légales et conditions (étape 14) ---------- */
+.page-legale { max-width: 720px; }
+.page-legale h2 { font-size: 1.15rem; margin: 28px 0 8px; }
+.page-legale p, .page-legale li { line-height: 1.6; }
+.page-legale ul { padding-left: 20px; }
+.infos-legales { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 6px 16px; margin: 0; }
+.infos-legales dt { font-weight: 700; }
+.infos-legales dd { margin: 0; overflow-wrap: anywhere; }
+.a-completer { background: #fff3cd; color: #8a6100; padding: 1px 6px; border-radius: 4px; font-size: .85em; }
+.liens-legaux { margin-top: 32px; font-size: .9rem; }
+.conditions-resume { border: 1px solid var(--accent); background: var(--accent-doux); border-radius: 10px; padding: 14px 16px; margin: 16px 0; font-size: .9rem; }
+.conditions-resume ul { margin: 6px 0 8px; padding-left: 18px; }
+.conditions-resume li { margin-bottom: 4px; }
+.conditions-resume p { margin: 0; }
+.conditions-titre { font-weight: 700; color: var(--accent-fonce); }
+.footer-bas { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; }
+.footer-liens { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.footer-liens a { color: inherit; }
+@media (max-width: 600px) {
+    .infos-legales { grid-template-columns: minmax(0, 1fr); }
+    .infos-legales dd { margin-bottom: 8px; }
+}

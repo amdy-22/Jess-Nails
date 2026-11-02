@@ -132,7 +132,7 @@ require __DIR__ . '/../includes/header.php';
                 <input type="password" id="mot_de_passe_confirmation" name="mot_de_passe_confirmation" minlength="8" autocomplete="new-password" required>
             </div>
         </div>
-
+        <p class="discret petit-texte">En créant ton compte, tu acceptes notre <a href="<?= BASE_URL ?>/confidentialite.php" target="_blank">politique de confidentialité</a>.</p>
         <button type="submit" class="btn btn-plein">Créer mon compte</button>
     </form>
 

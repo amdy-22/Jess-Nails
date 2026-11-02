@@ -19,7 +19,12 @@
         </div>
     </div>
     <div class="conteneur footer-bas discret">
-        &copy; <?= date('Y') ?> <?= e(APP_NAME) ?>
+        <span>&copy; <?= date('Y') ?> <?= e(APP_NAME) ?></span>
+        <nav class="footer-liens" aria-label="Informations légales">
+            <a href="<?= BASE_URL ?>/conditions.php">Conditions de réservation</a>
+            <a href="<?= BASE_URL ?>/confidentialite.php">Confidentialité</a>
+            <a href="<?= BASE_URL ?>/mentions-legales.php">Mentions légales</a>
+        </nav>
     </div>
 </footer>
 
