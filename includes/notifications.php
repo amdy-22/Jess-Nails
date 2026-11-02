@@ -246,3 +246,59 @@ function notifier_annulation_par_institut(int $reservationId): void
         ADMIN_NOTIFICATION_EMAIL !== '' ? ['email' => ADMIN_NOTIFICATION_EMAIL] : null
     );
 }
+
+
+/**
+ * Rappel envoyé quelques heures avant le rendez-vous (script taches/rappels.php).
+ * Renvoie true si l'email est parti.
+ */
+function notifier_rappel(int $reservationId): bool
+{
+    $stmt = db()->prepare(
+        "SELECT r.*, p.nom AS soin, p.duree_minutes, pr.nom AS praticienne, u.prenom, u.nom AS nom_client, u.email,
+                (SELECT COALESCE(SUM(pa.montant_fcfa), 0) FROM paiements pa
+                 WHERE pa.reservation_id = r.id AND pa.statut = 'approuve') AS paye
+         FROM reservations r
+         JOIN prestations p   ON p.id  = r.prestation_id
+         JOIN praticiennes pr ON pr.id = r.praticienne_id
+         JOIN utilisateurs u  ON u.id  = r.client_id
+         WHERE r.id = ?"
+    );
+    $stmt->execute([$reservationId]);
+    $r = $stmt->fetch();
+    if (!$r || !$r['email']) {
+        return false;
+    }
+
+    $debut = new DateTimeImmutable($r['debut']);
+    $jourTexte = match ($debut->format('Y-m-d')) {
+        date('Y-m-d')                      => 'aujourd\'hui',
+        date('Y-m-d', strtotime('+1 day')) => 'demain',
+        default                            => 'le ' . format_date_fr($debut),
+    };
+    $reste = max(0, (int) $r['prix_fcfa'] - (int) $r['paye']);
+
+    $lignes = [
+        'Soin'  => e($r['soin']) . ' (' . format_duree((int) $r['duree_minutes']) . ')',
+        'Heure' => e(ucfirst($jourTexte) . ' à ' . $debut->format('H\hi')),
+        'Avec'  => e($r['praticienne']),
+        'À régler sur place' => format_fcfa($reste),
+    ];
+
+    $contenu = '<p>Bonjour ' . e($r['prenom']) . ',</p>'
+        . '<p>Petit rappel : on t\'attend <strong>' . e($jourTexte) . ' à ' . $debut->format('H\hi') . '</strong>.</p>'
+        . tableau_email($lignes)
+        . (SALON_ADRESSE !== '' ? '<p><strong>Adresse :</strong> ' . e(SALON_ADRESSE) . '</p>' : '')
+        . '<p>Merci d\'arriver 5 minutes avant.'
+        . (SALON_TELEPHONE !== '' ? ' Un empêchement ? Préviens-nous au <strong>' . e(SALON_TELEPHONE) . '</strong>, '
+                                  . 'pour que le créneau profite à une autre cliente.' : '')
+        . '</p>'
+        . '<p style="color:#6e5f6c;font-size:13px;margin-top:24px;">À très vite,<br>L\'équipe ' . e(APP_NAME) . '</p>';
+
+    return envoyer_email(
+        [['email' => $r['email'], 'name' => $r['prenom'] . ' ' . $r['nom_client']]],
+        'Rappel : ton rendez-vous ' . $jourTexte . ' à ' . $debut->format('H\hi'),
+        gabarit_email('Rappel de ton rendez-vous', $contenu),
+        ADMIN_NOTIFICATION_EMAIL !== '' ? ['email' => ADMIN_NOTIFICATION_EMAIL] : null
+    );
+}

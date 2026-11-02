@@ -11,6 +11,7 @@ const HORIZON_JOURS      = 60;  // réservation possible jusqu'à 60 jours à l'
 const EXPIRATION_ATTENTE = 30;  // un créneau non payé est libéré après 30 min
 const PAIEMENT_EN_COURS  = 20;  // ... sauf si un paiement a été lancé il y a moins de 20 min
 const DELAI_ANNULATION_H = 06;  // la cliente peut annuler jusqu'à 06 h avant le rendez-vous
+const RAPPEL_HEURES_AVANT = 1;  // rappel par email 1 h avant le rendez-vous
 
 /**
  * Libellé et couleur du statut tel que la cliente le voit.
