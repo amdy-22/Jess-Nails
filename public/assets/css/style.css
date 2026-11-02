@@ -751,3 +751,24 @@ input, select, textarea {
     .nav.ouvert { animation: none; }
     .menu-icone span { transition: none; }
 }
+
+/* ---------- Admin : nouveau rendez-vous (étape 10) ---------- */
+.etapes-admin { display: flex; flex-direction: column; gap: 20px; max-width: 900px; }
+.cliente-choisie {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    background: var(--accent-doux); border-radius: var(--rayon); padding: 14px 16px;
+}
+.resa-bloc .form-recherche { flex-direction: row; align-items: flex-end; gap: 10px; }
+.form-recherche .champ { flex: 1; }
+.nouvelle-cliente { border-top: 1px solid var(--ligne); padding-top: 14px; }
+.nouvelle-cliente summary { cursor: pointer; font-weight: 700; color: var(--accent); }
+.nouvelle-cliente form { margin-top: 14px; }
+.tag-source {
+    display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px;
+    font-size: .72rem; font-weight: 700; vertical-align: middle;
+    background: #e8eef7; color: #2d4f7c;
+}
+.entete-compte .actions { margin-top: 0; }
+@media (max-width: 560px) {
+    .resa-bloc .form-recherche { flex-direction: column; align-items: stretch; }
+}

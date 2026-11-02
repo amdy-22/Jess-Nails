@@ -32,7 +32,7 @@ function attempt_login(string $email, string $motDePasse): ?array
     $stmt->execute([mb_strtolower(trim($email))]);
     $user = $stmt->fetch();
 
-    if (!$user || !password_verify($motDePasse, $user['mot_de_passe'])) {
+    if (!$user || empty($user['mot_de_passe']) || !password_verify($motDePasse, $user['mot_de_passe'])) {
         return null;
     }
 

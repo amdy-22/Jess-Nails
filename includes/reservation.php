@@ -104,7 +104,7 @@ function fermeture_du_jour(DateTimeImmutable $jour): ?string
  * $verrouiller = true : à utiliser DANS une transaction au moment d'enregistrer,
  * pour que deux clientes ne prennent pas la même place en même temps.
  */
-function creneaux_disponibles(array $prestation, DateTimeImmutable $jour, bool $verrouiller = false, ?int $praticienneId = null): array
+function creneaux_disponibles(array $prestation, DateTimeImmutable $jour, bool $verrouiller = false, ?int $praticienneId = null, int $delaiMinutes = DELAI_MIN_MINUTES): array
 {
     if (fermeture_du_jour($jour) !== null) {
         return [];
@@ -122,7 +122,7 @@ function creneaux_disponibles(array $prestation, DateTimeImmutable $jour, bool $
     $ouverture = new DateTimeImmutable($date . ' ' . $h['heure_ouverture']);
     $fermeture = new DateTimeImmutable($date . ' ' . $h['heure_fermeture']);
     $duree     = (int) $prestation['duree_minutes'];
-    $auPlusTot = (new DateTimeImmutable())->modify('+' . DELAI_MIN_MINUTES . ' minutes');
+    $auPlusTot = (new DateTimeImmutable())->modify(($delaiMinutes >= 0 ? '+' : '') . $delaiMinutes . ' minutes');
 
     // Praticiennes actives (verrouillées pendant l'enregistrement)
     $sql = 'SELECT id FROM praticiennes WHERE actif = 1 ORDER BY id' . ($verrouiller ? ' FOR UPDATE' : '');

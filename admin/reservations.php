@@ -91,8 +91,9 @@ $activeAdmin = 'reservations';
 require __DIR__ . '/../includes/admin_header.php';
 ?>
 
-<section class="entete-page">
+<section class="entete-page entete-compte">
     <h1>Réservations</h1>
+    <a href="<?= ADMIN_URL ?>/nouvelle-reservation.php" class="btn btn-plein">Nouveau rendez-vous</a>
 </section>
 
 <form method="get" class="filtres-admin">

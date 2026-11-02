@@ -59,7 +59,10 @@ require __DIR__ . '/../includes/admin_header.php';
         <h1>Tableau de bord</h1>
         <p class="discret"><?= e(ucfirst(format_date_fr(new DateTimeImmutable()))) ?></p>
     </div>
-    <a href="<?= ADMIN_URL ?>/reservations.php" class="btn">Toutes les réservations</a>
+    <div class="actions">
+        <a href="<?= ADMIN_URL ?>/nouvelle-reservation.php" class="btn btn-plein">Nouveau rendez-vous</a>
+        <a href="<?= ADMIN_URL ?>/reservations.php" class="btn">Toutes les réservations</a>
+    </div>
 </section>
 
 <section class="tuiles">

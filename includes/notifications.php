@@ -5,7 +5,7 @@
 require_once __DIR__ . '/mailer.php';
 require_once __DIR__ . '/reservation.php';   // format_date_fr()
 
-function notifier_reservation_confirmee(int $reservationId): void
+function notifier_reservation_confirmee(int $reservationId, bool $prevenirAdmin = true): void
 {
     $stmt = db()->prepare(
         "SELECT r.*, p.nom AS soin, p.duree_minutes, pr.nom AS praticienne,
@@ -66,6 +66,9 @@ function notifier_reservation_confirmee(int $reservationId): void
     );
 
     // ---------- Email à l'admin ----------
+    if (!$prevenirAdmin) {
+        return;
+    }
     $admins = ADMIN_NOTIFICATION_EMAIL !== ''
         ? [['email' => ADMIN_NOTIFICATION_EMAIL]]
         : array_map(fn($a) => ['email' => $a['email'], 'name' => $a['prenom']],

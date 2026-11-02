@@ -133,6 +133,14 @@ function sql_reservations_admin(): string
 }
 
 /** Texte "payé / sur place / remboursé" pour une ligne. */
+/** Petite étiquette indiquant l'origine d'un rendez-vous saisi par l'institut. */
+function tag_source(array $r): string
+{
+    $libelles = ['telephone' => 'Téléphone', 'whatsapp' => 'WhatsApp', 'sur_place' => 'Sur place'];
+    $source = $r['source'] ?? 'en_ligne';
+    return isset($libelles[$source]) ? ' <span class="tag-source">' . $libelles[$source] . '</span>' : '';
+}
+
 function etat_paiement(array $r): string
 {
     if ((int) $r['paye'] > 0) {
@@ -176,7 +184,7 @@ function afficher_tableau(array $lignes, string $retour, bool $avecDate): void
                         <?php endif; ?>
                         <br><a class="discret" href="tel:<?= e($r['telephone']) ?>"><?= e($r['telephone']) ?></a>
                     </td>
-                    <td><?= e($r['soin']) ?><?php if ($r['note_client']): ?><br><span class="discret petit-note">« <?= e($r['note_client']) ?> »</span><?php endif; ?></td>
+                    <td><?= e($r['soin']) ?><?= tag_source($r) ?><?php if ($r['note_client']): ?><br><span class="discret petit-note">« <?= e($r['note_client']) ?> »</span><?php endif; ?></td>
                     <td><?= e($r['praticienne']) ?></td>
                     <td class="col-num"><?= format_fcfa((int) $r['prix_fcfa']) ?></td>
                     <td><?= etat_paiement($r) ?></td>

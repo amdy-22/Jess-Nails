@@ -44,9 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$erreurs) {
-        $existe = db()->prepare('SELECT id FROM utilisateurs WHERE email = ?');
+        $existe = db()->prepare('SELECT mot_de_passe FROM utilisateurs WHERE email = ?');
         $existe->execute([$email]);
-        if ($existe->fetch()) {
+        $compte = $existe->fetch();
+        if ($compte && empty($compte['mot_de_passe'])) {
+            $erreurs[] = 'L\'institut a déjà créé un compte avec cet email. Clique sur « Mot de passe oublié » '
+                       . 'depuis la page de connexion pour choisir ton mot de passe.';
+        } elseif ($compte) {
             $erreurs[] = 'Un compte existe déjà avec cet email. Connecte-toi plutôt.';
         }
     }
