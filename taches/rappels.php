@@ -93,3 +93,6 @@ foreach ($aEnvoyer as $r) {
 if (!$essai) {
     journal("Terminé : $envoyes envoyé(s), $echecs échec(s).");
 }
+
+// Code de sortie 1 en cas d'échec : AlwaysData envoie alors un rapport d'erreur par email
+exit($echecs > 0 ? 1 : 0);
