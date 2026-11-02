@@ -772,3 +772,28 @@ input, select, textarea {
 @media (max-width: 560px) {
     .resa-bloc .form-recherche { flex-direction: column; align-items: stretch; }
 }
+
+/* ---------- Admin : planning d'une praticienne (étape 12) ---------- */
+.planning-liste { display: flex; flex-direction: column; gap: 10px; }
+.planning-entete, .planning-ligne {
+    display: grid; grid-template-columns: 120px minmax(0, 1fr) minmax(0, 1fr); gap: 12px; align-items: center;
+}
+.planning-entete { font-size: .76rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--discret); }
+.planning-heures { display: flex; align-items: center; gap: 6px; }
+.planning-heures input[type=time] {
+    font: inherit; padding: 7px 8px; border: 1.5px solid var(--ligne); border-radius: 8px;
+    background: var(--fond); min-width: 0; width: 100%;
+}
+.planning-repos, .planning-ferme-institut { display: none; color: var(--discret); font-style: italic; grid-column: 2 / -1; }
+.planning-ferme-institut { display: inline; }
+.planning-ligne:has([data-planning-case]:not(:checked)) .planning-heures { display: none; }
+.planning-ligne:has([data-planning-case]:not(:checked)) .planning-repos { display: inline; }
+.colonne-droite { display: flex; flex-direction: column; gap: 20px; }
+.resa-bloc .form-conge { display: flex; flex-direction: column; gap: 14px; }
+.entete-page p a { text-decoration: none; font-weight: 600; }
+@media (max-width: 640px) {
+    .planning-entete { display: none; }
+    .planning-ligne { grid-template-columns: minmax(0, 1fr); gap: 6px; padding-bottom: 10px; border-bottom: 1px solid var(--ligne); }
+    .planning-repos, .planning-ferme-institut { grid-column: auto; }
+    .planning-heures:nth-of-type(2)::before { content: "Pause :"; font-size: .8rem; color: var(--discret); margin-right: 4px; }
+}

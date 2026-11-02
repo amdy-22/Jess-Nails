@@ -73,7 +73,10 @@ $praticiennes = db()->query(
     "SELECT pr.*,
             (SELECT COUNT(*) FROM reservations r WHERE r.praticienne_id = pr.id AND r.statut = 'confirmee' AND r.debut > NOW()) AS a_venir,
             (SELECT COUNT(*) FROM reservations r WHERE r.praticienne_id = pr.id AND DATE(r.debut) = CURDATE() AND r.statut IN ('confirmee','terminee')) AS aujourdhui,
-            (SELECT COUNT(*) FROM reservations r WHERE r.praticienne_id = pr.id) AS total
+            (SELECT COUNT(*) FROM reservations r WHERE r.praticienne_id = pr.id) AS total,
+            (SELECT COUNT(*) FROM praticienne_horaires ph WHERE ph.praticienne_id = pr.id) AS a_planning,
+            (SELECT COUNT(*) FROM praticienne_horaires ph WHERE ph.praticienne_id = pr.id AND ph.heure_debut IS NOT NULL) AS jours_travail,
+            (SELECT MIN(pa.date_debut) FROM praticienne_absences pa WHERE pa.praticienne_id = pr.id AND pa.date_fin >= CURDATE()) AS prochain_conge
      FROM praticiennes pr ORDER BY pr.actif DESC, pr.nom"
 )->fetchAll();
 $nbActives = count(array_filter($praticiennes, fn($p) => $p['actif']));
@@ -95,7 +98,7 @@ require __DIR__ . '/../includes/admin_header.php';
     <div class="tableau-conteneur">
         <table class="tableau">
             <thead>
-                <tr><th>Nom</th><th>Aujourd'hui</th><th>À venir</th><th>Statut</th><th><span class="sr-only">Actions</span></th></tr>
+                <tr><th>Nom</th><th>Planning</th><th>Aujourd'hui</th><th>À venir</th><th>Statut</th><th><span class="sr-only">Actions</span></th></tr>
             </thead>
             <tbody>
             <?php foreach ($praticiennes as $p): ?>
@@ -110,6 +113,12 @@ require __DIR__ . '/../includes/admin_header.php';
                             <button type="submit" class="btn-action">Renommer</button>
                         </form>
                     </td>
+                    <td class="nowrap">
+                        <?= $p['a_planning'] ? (int) $p['jours_travail'] . ' j / semaine' : '<span class="discret">Horaires de l\'institut</span>' ?>
+                        <?php if ($p['prochain_conge']): ?>
+                            <br><span class="badge badge-attente">Congé <?= $p['prochain_conge'] <= date('Y-m-d') ? 'en cours' : 'dès le ' . date('d/m', strtotime($p['prochain_conge'])) ?></span>
+                        <?php endif; ?>
+                    </td>
                     <td class="nowrap"><?= (int) $p['aujourdhui'] ?> rdv</td>
                     <td class="nowrap">
                         <a href="<?= ADMIN_URL ?>/reservations.php?praticienne=<?= (int) $p['id'] ?>&amp;statut=confirmee"><?= (int) $p['a_venir'] ?> rdv</a>
@@ -117,6 +126,7 @@ require __DIR__ . '/../includes/admin_header.php';
                     <td><span class="badge badge-<?= $p['actif'] ? 'ok' : 'neutre' ?>"><?= $p['actif'] ? 'Active' : 'Inactive' ?></span></td>
                     <td>
                         <div class="actions-ligne">
+                            <a class="btn-action" href="<?= ADMIN_URL ?>/planning-praticienne.php?id=<?= (int) $p['id'] ?>">Planning</a>
                             <form method="post" <?= $p['actif'] && $p['a_venir'] ? 'data-confirmer="' . e($p['nom'] . ' a ' . $p['a_venir'] . ' rendez-vous à venir. Ils restent maintenus. La désactiver quand même ?') . '"' : '' ?>>
                                 <?= csrf_field() ?>
                                 <input type="hidden" name="action" value="basculer">

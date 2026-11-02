@@ -132,6 +132,12 @@ function creneaux_disponibles(array $prestation, DateTimeImmutable $jour, bool $
         // La cliente a choisi une praticienne : on ne regarde que son planning
         $praticiennes = in_array($praticienneId, array_map('intval', $praticiennes), true) ? [$praticienneId] : [];
     }
+    // Planning de chacune ce jour-là : on retire celles en congé ou en repos
+    $plannings    = planning_du_jour($praticiennes, $jour, $ouverture, $fermeture);
+    $praticiennes = array_keys($plannings);
+    if (!$praticiennes) {
+        return [];
+    }
 
     // Rendez-vous qui occupent déjà la journée (confirmés ou encore bloqués)
     $stmt = db()->prepare(
@@ -148,6 +154,12 @@ function creneaux_disponibles(array $prestation, DateTimeImmutable $jour, bool $
             $charge[$r['praticienne_id']] += (strtotime($r['fin']) - strtotime($r['debut'])) / 60;
         }
     }
+    // La pause déjeuner de chacune est traitée comme un rendez-vous (sans compter dans sa charge)
+    foreach ($plannings as $pid => $pl) {
+        if ($pl['pause']) {
+            $occupe[$pid][] = $pl['pause'];
+        }
+    }
 
     $creneaux = [];
     for ($debut = $ouverture; $debut->modify("+$duree minutes") <= $fermeture; $debut = $debut->modify('+' . PAS_CRENEAU_MIN . ' minutes')) {
@@ -157,10 +169,13 @@ function creneaux_disponibles(array $prestation, DateTimeImmutable $jour, bool $
         $d = $debut->getTimestamp();
         $f = $d + $duree * 60;
 
-        // Première praticienne libre sur tout l'intervalle
-                // Parmi les praticiennes libres sur tout l'intervalle, on prend la moins chargée du jour
+        // Parmi les praticiennes libres sur tout l'intervalle, on prend la moins chargée du jour
         $choisie = null;
         foreach ($praticiennes as $pid) {
+            // Le soin doit tenir entièrement dans ses heures de travail
+            if ($d < $plannings[$pid]['debut'] || $f > $plannings[$pid]['fin']) {
+                continue;
+            }
             foreach ($occupe[$pid] ?? [] as [$od, $of]) {
                 if ($od < $f && $of > $d) {   // chevauchement
                     continue 2;
@@ -175,6 +190,69 @@ function creneaux_disponibles(array $prestation, DateTimeImmutable $jour, bool $
         }
     }
     return $creneaux;
+}
+
+/**
+ * Heures de travail de chaque praticienne un jour donné, bornées par l'ouverture de l'institut.
+ * Renvoie [id => ['debut' => ts, 'fin' => ts, 'pause' => [ts, ts] ou null]]
+ * Une praticienne en congé ou en repos ce jour-là n'apparaît pas.
+ * Sans planning enregistré, elle suit les horaires de l'institut, sans pause.
+ */
+function planning_du_jour(array $ids, DateTimeImmutable $jour, DateTimeImmutable $ouverture, DateTimeImmutable $fermeture): array
+{
+    if (!$ids) {
+        return [];
+    }
+    $ids   = array_map('intval', $ids);
+    $marks = implode(',', array_fill(0, count($ids), '?'));
+    $date  = $jour->format('Y-m-d');
+
+    // En congé ce jour-là
+    $stmt = db()->prepare("SELECT DISTINCT praticienne_id FROM praticienne_absences
+                           WHERE praticienne_id IN ($marks) AND ? BETWEEN date_debut AND date_fin");
+    $stmt->execute([...$ids, $date]);
+    $absentes = array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN));
+
+    // Planning de la semaine type pour ce jour
+    $stmt = db()->prepare("SELECT * FROM praticienne_horaires WHERE praticienne_id IN ($marks) AND jour_semaine = ?");
+    $stmt->execute([...$ids, (int) $jour->format('N')]);
+    $lignes = [];
+    foreach ($stmt->fetchAll() as $l) {
+        $lignes[(int) $l['praticienne_id']] = $l;
+    }
+    // Une praticienne qui a un planning enregistré, mais rien pour ce jour, ne travaille pas ce jour
+    $stmt = db()->prepare("SELECT DISTINCT praticienne_id FROM praticienne_horaires WHERE praticienne_id IN ($marks)");
+    $stmt->execute($ids);
+    $avecPlanning = array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN));
+
+    $ts = fn(?string $heure) => $heure === null ? null : strtotime($date . ' ' . $heure);
+    $ouv = $ouverture->getTimestamp();
+    $fer = $fermeture->getTimestamp();
+
+    $resultat = [];
+    foreach ($ids as $pid) {
+        if (in_array($pid, $absentes, true)) {
+            continue;
+        }
+        if (!in_array($pid, $avecPlanning, true)) {
+            $resultat[$pid] = ['debut' => $ouv, 'fin' => $fer, 'pause' => null];   // horaires de l'institut
+            continue;
+        }
+        $l = $lignes[$pid] ?? null;
+        if (!$l || $l['heure_debut'] === null || $l['heure_fin'] === null) {
+            continue;   // repos ce jour-là
+        }
+        $debut = max($ouv, $ts($l['heure_debut']));
+        $fin   = min($fer, $ts($l['heure_fin']));
+        if ($fin <= $debut) {
+            continue;
+        }
+        $pause = ($l['pause_debut'] !== null && $l['pause_fin'] !== null)
+            ? [$ts($l['pause_debut']), $ts($l['pause_fin'])]
+            : null;
+        $resultat[$pid] = ['debut' => $debut, 'fin' => $fin, 'pause' => $pause];
+    }
+    return $resultat;
 }
 
 /** Range les créneaux en Matin / Après-midi / Soir pour l'affichage. */
