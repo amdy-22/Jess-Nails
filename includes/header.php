@@ -22,7 +22,7 @@ function nav_class(string $page, string $active): string
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=6">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=7">
 </head>
 <body>
 
@@ -40,6 +40,7 @@ function nav_class(string $page, string $active): string
                 <li><a href="<?= BASE_URL ?>/index.php"<?= nav_class('accueil', $activePage) ?>>Accueil</a></li>
                 <li><a href="<?= BASE_URL ?>/prestations.php"<?= nav_class('prestations', $activePage) ?>>Prestations</a></li>
                 <li><a href="<?= BASE_URL ?>/reserver.php"<?= nav_class('reserver', $activePage) ?>>Réserver</a></li>
+                <li><a href="<?= BASE_URL ?>/galerie.php"<?= nav_class('galerie', $activePage) ?>>Galerie</a></li>
                 <li><a href="<?= BASE_URL ?>/contact.php"<?= nav_class('contact', $activePage) ?>>Contact</a></li>
             </ul>
 

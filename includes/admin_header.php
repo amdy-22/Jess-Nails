@@ -24,7 +24,7 @@ function admin_lien(string $page, string $fichier, string $libelle, string $acti
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=6">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=7">
 </head>
 <body class="admin">
 
@@ -42,6 +42,7 @@ function admin_lien(string $page, string $fichier, string $libelle, string $acti
                 <?= admin_lien('tableau', 'index.php', 'Tableau de bord', $activeAdmin) ?>
                 <?= admin_lien('reservations', 'reservations.php', 'Réservations', $activeAdmin) ?>
                 <?= admin_lien('prestations', 'prestations.php', 'Prestations', $activeAdmin) ?>
+                <?= admin_lien('galerie', 'galerie.php', 'Galerie', $activeAdmin) ?>
                 <?= admin_lien('praticiennes', 'praticiennes.php', 'Praticiennes', $activeAdmin) ?>
                 <?= admin_lien('horaires', 'horaires.php', 'Horaires', $activeAdmin) ?>
             </ul>

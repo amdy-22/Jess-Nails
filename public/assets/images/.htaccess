@@ -1,0 +1,5 @@
+# Dossier d'images envoyées : aucun script ne doit pouvoir s'exécuter ici
+<FilesMatch "\.(php|phtml|phar|php\d|pl|py|cgi|sh)$">
+    Require all denied
+</FilesMatch>
+Options -Indexes

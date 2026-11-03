@@ -43,6 +43,7 @@ function envoyer_email(array $destinataires, string $sujet, string $html, ?array
         'to'          => $destinataires,
         'subject'     => $sujet,
         'htmlContent' => $html,
+        'textContent' => texte_brut($html),
     ];
     if ($repondreA) {
         $corps['replyTo'] = $repondreA;
@@ -108,4 +109,15 @@ function tableau_email(array $lignes): string
             . '</tr>';
     }
     return $html . '</table>';
+}
+
+/** Version texte d'un email HTML (pour Gmail et les messageries qui n'affichent pas le HTML). */
+function texte_brut(string $html): string
+{
+    $html = preg_replace('#<(br|/p|/tr|/h1|/div)\b[^>]*>#i', "\n", $html);
+    $html = preg_replace('#</td>\s*<td[^>]*>#i', ' : ', $html);
+    $html = preg_replace('#<a\s[^>]*href="([^"]+)"[^>]*>(.*?)</a>#is', '$2 ($1)', $html);
+    $texte = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $texte = preg_replace("/[ \t]+/", ' ', $texte);
+    return trim(preg_replace("/\n\s*\n\s*\n+/", "\n\n", $texte));
 }

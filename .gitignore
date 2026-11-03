@@ -7,6 +7,8 @@ logs/*
 !logs/.htaccess
 public/assets/images/prestations/*
 !public/assets/images/prestations/.gitkeep
+public/assets/images/galerie/*
+!public/assets/images/galerie/.gitkeep
 
 # ---- Sauvegardes et exports de base ----
 *.sql.gz

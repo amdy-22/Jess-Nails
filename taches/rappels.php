@@ -1,13 +1,7 @@
 <?php
 /**
  * Envoie les rappels par email avant les rendez-vous.
- *
- * Tâche planifiée (AlwaysData) toutes les 15 minutes :
- *   php $HOME/www/jess-nails/taches/rappels.php
- *
- * À la main, pour tester :
- *   php taches/rappels.php            envoie les rappels dus
- *   php taches/rappels.php --essai    affiche ce qui serait envoyé, sans rien envoyer
+ 
  */
 
 if (PHP_SAPI !== 'cli') {
@@ -36,8 +30,8 @@ function journal(string $message): void
     @file_put_contents(__DIR__ . '/../logs/rappels.log', $ligne, FILE_APPEND);
 }
 
-// Rendez-vous confirmés, dans les 6 prochaines heures, rappel pas encore envoyé,
-// réservés plus de 6 h à l'avance, cliente avec un email
+// Rendez-vous confirmés, dans la prochaine heure, rappel pas encore envoyé,
+// réservés plus d'une heure à l'avance, cliente avec un email
 $stmt = db()->prepare(
     "SELECT r.id, r.debut, u.email
      FROM reservations r
