@@ -1063,3 +1063,82 @@ input, select, textarea {
     .btn-deconnexion { background: transparent; color: var(--accent); }
     .btn-deconnexion:hover { color: #fff; }
 }
+
+/* ---------- Formulaire de contact et messages (étape 22) ---------- */
+.contact-formulaire {
+    max-width: 760px; margin-top: 40px; padding: 28px;
+    background: var(--surface); border: 1px solid var(--ligne); border-radius: var(--rayon); box-shadow: var(--ombre);
+    scroll-margin-top: 90px;
+}
+.contact-formulaire h2 { margin: 0 0 4px; }
+.contact-formulaire > .discret { margin: 0 0 18px; }
+.contact-formulaire form { display: flex; flex-direction: column; gap: 16px; }
+.contact-formulaire .petit-note { margin: -6px 0 0; }
+.contact-formulaire button[type=submit] { align-self: flex-start; }
+.champ-piege { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+@media (max-width: 600px) {
+    .contact-formulaire { padding: 22px 18px; }
+    .contact-formulaire button[type=submit] { align-self: stretch; }
+}
+/* Admin */
+.compteur-nav {
+    display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 6px;
+    margin-left: 4px; border-radius: 999px; background: var(--accent); color: #fff; font-size: .72rem; font-weight: 700; vertical-align: 1px;
+}
+.entete-messages { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; max-width: none; }
+.liste-messages { display: flex; flex-direction: column; gap: 14px; max-width: 860px; margin-top: 18px; }
+.message-carte { background: var(--surface); border: 1px solid var(--ligne); border-radius: var(--rayon); padding: 18px 20px; scroll-margin-top: 90px; }
+.message-non-lu { border-left: 4px solid var(--accent); }
+.message-texte { margin: 12px 0 14px; line-height: 1.6; overflow-wrap: anywhere; }
+.message-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.message-actions form { margin: 0; }
+/* Menu admin : une ligne, même avec le lien Messages */
+.admin .nav a, .admin .lien-bouton { white-space: nowrap; }
+@media (min-width: 761px) and (max-width: 1280px) {
+    .admin .nav { gap: 16px; }
+    .admin .nav ul { gap: 14px; }
+    .admin .nav a, .admin .lien-bouton { font-size: .85rem; }
+}
+@media (min-width: 761px) and (max-width: 1050px) {
+    .admin .logo-admin { display: none; }
+    .admin .nav ul { gap: 10px; }
+    .admin .nav a, .admin .lien-bouton { font-size: .8rem; }
+}
+@media (min-width: 761px) and (max-width: 900px) {
+    .admin .header-inner { gap: 12px; }
+    .admin .nav { gap: 10px; }
+    .admin .nav ul { gap: 8px; }
+    .admin .nav a, .admin .lien-bouton { font-size: .75rem; }
+    .admin .voir-site { display: none; }
+}
+
+/* ---------- Champ « Choisir des fichiers » (admin galerie) ---------- */
+.galerie-envoi input[type="file"] {
+    width: 100%; padding: 10px 12px; border: 0; border-radius: 8px;
+    background: var(--accent); color: #fff;
+    font: 500 .95rem var(--police-texte); cursor: pointer;
+    transition: background .15s;
+}
+.galerie-envoi input[type="file"]:hover { background: var(--accent-fonce); }
+.galerie-envoi input[type="file"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.galerie-envoi input[type="file"]::file-selector-button {
+    margin-right: 14px; padding: 8px 16px; border: 0; border-radius: 6px;
+    background: #fff; color: var(--accent-fonce);
+    font: 700 .92rem var(--police-texte); cursor: pointer;
+    transition: background .15s, color .15s;
+}
+.galerie-envoi input[type="file"]::file-selector-button:hover { background: var(--accent-doux); }
+/* Anciens Safari */
+.galerie-envoi input[type="file"]::-webkit-file-upload-button {
+    margin-right: 14px; padding: 8px 16px; border: 0; border-radius: 6px;
+    background: #fff; color: var(--accent-fonce); font: 700 .92rem var(--police-texte); cursor: pointer;
+}
+
+/* ---------- Admin praticiennes : tableau large, formulaire d'ajout étroit ---------- */
+.grille-praticiennes { grid-template-columns: minmax(0, 1fr) 300px; align-items: start; }
+.grille-praticiennes .form-renommer input { width: 150px; }
+.grille-praticiennes .tableau td, .grille-praticiennes .tableau th { white-space: nowrap; }
+@media (max-width: 1250px) {
+    .grille-praticiennes { grid-template-columns: minmax(0, 1fr); }
+    .grille-praticiennes > :last-child { max-width: 460px; }
+}

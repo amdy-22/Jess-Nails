@@ -94,7 +94,7 @@ require __DIR__ . '/../includes/admin_header.php';
     </p>
 </section>
 
-<div class="grille-profil grille-admin">
+<div class="grille-profil grille-admin grille-praticiennes">
     <div class="tableau-conteneur">
         <table class="tableau">
             <thead>

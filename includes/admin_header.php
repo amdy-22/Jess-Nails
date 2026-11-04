@@ -51,11 +51,12 @@ try {
                 <?= admin_lien('reservations', 'reservations', 'Réservations', $activeAdmin) ?>
                 <?= admin_lien('prestations', 'prestations', 'Prestations', $activeAdmin) ?>
                 <?= admin_lien('galerie', 'galerie', 'Galerie', $activeAdmin) ?>
+                <?= admin_lien('messages', 'messages', 'Messages', $activeAdmin, $messagesNonLus) ?>
                 <?= admin_lien('praticiennes', 'praticiennes', 'Praticiennes', $activeAdmin) ?>
                 <?= admin_lien('horaires', 'horaires', 'Horaires', $activeAdmin) ?>
             </ul>
             <ul class="nav-compte">
-                <li><a href="<?= BASE_URL ?>/">Voir le site</a></li>
+                <li class="voir-site"><a href="<?= BASE_URL ?>/">Voir le site</a></li>
                 <li>
                     <form action="<?= BASE_URL ?>/deconnexion" method="post" class="form-inline">
                         <?= csrf_field() ?>
