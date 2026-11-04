@@ -1160,8 +1160,16 @@ input, select, textarea {
     .admin .nav a, .admin .lien-bouton { font-size: .88rem; }
 }
 
-@media (min-width: 761px) and (max-width: 1400px) {
+/* Écran de portable (souvent 1280 à 1400 px avec le zoom Windows) : icônes gardées, textes secondaires retirés */
+@media (min-width: 1200px) and (max-width: 1400px) {
+    .admin .voir-site span { display: none; }
+    .admin .nav { gap: 14px; }
+    .admin .nav ul { gap: 12px; }
+    .admin .nav-liens a { gap: 5px; }
+}
+@media (min-width: 761px) and (max-width: 1199px) {
     .admin .nav-liens .icone-trait { display: none; }
+    .admin .voir-site span { display: none; }
 }
 @media (min-width: 761px) and (max-width: 1100px) {
     .admin .voir-site span, .admin .btn-deconnexion span { display: none; }
