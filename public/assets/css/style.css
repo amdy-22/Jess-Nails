@@ -989,3 +989,77 @@ input, select, textarea {
 @media (prefers-reduced-motion: reduce) {
     .pied-groupe summary::after { transition: none; }
 }
+
+/* =========================================================
+   En-tête public avec icônes, façon WINFIOL (étape 21)
+   ========================================================= */
+.entete-public .nav { justify-content: flex-end; gap: 28px; }
+.entete-public .nav-liens { gap: 24px; }
+.entete-public .nav-liens a,
+.entete-public .lien-connexion {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: .9rem; font-weight: 500; color: var(--encre);
+    padding: 6px 0; border-bottom: 2px solid transparent;
+}
+.entete-public .nav-liens a .icone-trait,
+.entete-public .lien-connexion .icone-trait { color: var(--discret); transition: color .15s; }
+.entete-public .nav-liens a:hover,
+.entete-public .nav-liens a:hover .icone-trait,
+.entete-public .lien-connexion:hover .icone-trait { color: var(--accent); }
+.entete-public .nav-liens a.actif { color: var(--accent); font-weight: 700; border-bottom-color: var(--accent); }
+.entete-public .nav-liens a.actif .icone-trait { color: var(--accent); }
+
+.entete-public .nav-compte { gap: 14px; }
+.avatar {
+    display: inline-flex; align-items: center; justify-content: center; flex: none;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--accent); color: #fff; font-size: .8rem; font-weight: 700; letter-spacing: .3px;
+    box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--accent-doux);
+    transition: box-shadow .15s;
+}
+.avatar-lien { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+.avatar-lien:hover .avatar, .avatar-lien.actif .avatar { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--accent); }
+.avatar-texte { display: none; }
+.btn-deconnexion, .entete-public .btn-inscription {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px; border-radius: 8px; border: 1px solid var(--accent);
+    background: var(--accent); color: #fff; font: 600 .88rem var(--police-texte);
+    cursor: pointer; text-decoration: none; transition: background .15s, border-color .15s;
+}
+.btn-deconnexion:hover, .entete-public .btn-inscription:hover { background: var(--accent-fonce); border-color: var(--accent-fonce); color: #fff; }
+.btn-deconnexion:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (min-width: 761px) and (max-width: 1100px) {
+    .entete-public .nav { gap: 18px; }
+    .entete-public .nav-liens { gap: 16px; }
+    .entete-public .nav-liens a .icone-trait { display: none; }
+    .entete-public .btn-inscription .icone-trait { display: none; }
+}
+@media (min-width: 761px) and (max-width: 900px) {
+    .entete-public .nav-liens a, .entete-public .lien-connexion { font-size: .84rem; }
+    .entete-public .nav-liens { gap: 12px; }
+    .btn-deconnexion span { display: none; }
+    .btn-deconnexion { padding: 8px 10px; }
+}
+
+@media (max-width: 760px) {
+    .entete-public .nav { gap: 0; }
+    .entete-public .nav-liens { gap: 0; }
+    .entete-public .nav-liens a {
+        display: flex; justify-content: flex-start; gap: 14px;
+        padding: 15px 4px; font-size: 1.05rem; font-weight: 600; border-bottom: 1px solid var(--ligne);
+    }
+    .entete-public .nav-liens a .icone-trait { width: 21px; height: 21px; }
+    .entete-public .nav-liens a::after { margin-left: auto; }
+    .entete-public .nav-liens a.actif { border-bottom-color: var(--ligne); }
+
+    .entete-public .nav-compte { margin-top: 16px; gap: 10px; }
+    .entete-public .avatar-lien { display: flex; width: 100%; padding: 8px 4px; font-weight: 600; color: var(--encre); }
+    .avatar-texte { display: inline; }
+    .entete-public .lien-connexion { display: flex; width: 100%; padding: 12px 4px; font-size: 1rem; }
+    .btn-deconnexion, .entete-public .btn-inscription {
+        width: 100%; justify-content: center; padding: 13px; font-size: 1rem; border-radius: 999px;
+    }
+    .btn-deconnexion { background: transparent; color: var(--accent); }
+    .btn-deconnexion:hover { color: #fff; }
+}
