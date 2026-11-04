@@ -180,13 +180,13 @@ require __DIR__ . '/../includes/admin_header.php';
         <h2>Notifications</h2>
         <p>Les emails de l'institut (nouvelles réservations, annulations, acomptes, messages de contact) arrivent à :</p>
         <p class="notif-adresse"><?= e($notifVers) ?></p>
-        <p class="discret petit-note">
+        <!--p class="discret petit-note">
             <?php if (ADMIN_NOTIFICATION_EMAIL !== ''): ?>
                 Adresse réglée dans <code>config/config.php</code> (ADMIN_NOTIFICATION_EMAIL).
             <?php else: ?>
                 Aucune adresse n'est réglée dans <code>config/config.php</code> : les emails partent vers <?= $nbAdmins > 1 ? 'les ' . $nbAdmins . ' comptes administrateurs' : 'ton compte' ?>.
             <?php endif; ?>
-        </p>
+        </p-->
     </section>
 </div>
 

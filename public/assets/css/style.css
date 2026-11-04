@@ -1368,3 +1368,12 @@ body.sans-defilement .whatsapp-flottant { display: none; }
     .avatar-grand, .admin .avatar-grand { width: 56px; height: 56px; font-size: 1.2rem; }
     .admin .avatar-lien { width: 100%; padding: 8px 4px; font-weight: 600; color: #fff; }
 }
+
+/* Menu mobile : espace entre l'icône et « Connexion » */
+@media (max-width: 760px) {
+    .entete-public .nav-compte .lien-connexion {
+        display: flex; align-items: center; gap: 14px;
+        padding: 14px 4px; font-size: 1.05rem; font-weight: 600;
+    }
+    .entete-public .nav-compte .lien-connexion .icone-trait { width: 21px; height: 21px; }
+}
