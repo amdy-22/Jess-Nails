@@ -910,3 +910,82 @@ input, select, textarea {
     .carrousel-piste { scroll-behavior: auto; }
     .carrousel-slide img, .carrousel-point { transition: none; }
 }
+
+/* =========================================================
+   En-tête mobile : hamburger à gauche, logo centré (étape 20)
+   ========================================================= */
+@media (max-width: 760px) {
+    .header-inner {
+        display: grid;
+        grid-template-columns: 48px minmax(0, 1fr) 48px;
+        align-items: center;
+        gap: 0;
+        min-height: 64px;
+    }
+    .header-inner .menu-toggle { grid-column: 1; grid-row: 1; justify-self: start; }
+    .header-inner .logo { grid-column: 2; grid-row: 1; justify-self: center; font-size: 2rem; line-height: 1; white-space: nowrap; }
+
+    .menu-toggle,
+    .menu-toggle[aria-expanded="true"] {
+        border: 0; background: transparent; padding: 10px 6px; margin-left: -6px;
+        color: var(--encre); border-radius: 8px;
+    }
+    .menu-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .menu-texte { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .menu-icone { width: 28px; height: 20px; }
+    .menu-icone span { height: 2.5px; }
+    .menu-icone span:nth-child(2) { top: 8.75px; }
+    .menu-icone span:nth-child(3) { top: 17.5px; }
+    .menu-toggle[aria-expanded="true"] .menu-icone span:nth-child(1),
+    .menu-toggle[aria-expanded="true"] .menu-icone span:nth-child(3) { top: 8.75px; }
+
+    .admin .menu-toggle, .admin .menu-toggle[aria-expanded="true"] { background: transparent; color: #fff; }
+    .admin .header-inner .logo { font-size: 1.6rem; }
+}
+
+/* =========================================================
+   Pied de page façon Apple (étape 20)
+   ========================================================= */
+.site-footer { background: #f5f1f3; border-top: 1px solid var(--ligne); padding-top: 28px; font-size: .82rem; color: var(--discret); }
+.site-footer a { color: var(--encre); text-decoration: none; }
+.site-footer a:hover { text-decoration: underline; }
+
+.pied-groupes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; padding-bottom: 22px; border-bottom: 1px solid var(--ligne); }
+.pied-groupe summary { list-style: none; font-weight: 700; color: var(--encre); margin-bottom: 10px; }
+.pied-groupe summary::-webkit-details-marker { display: none; }
+.pied-groupe ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+
+.pied-phrase { margin: 18px 0 0; line-height: 1.6; }
+.pied-phrase a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.pied-lieu { margin: 14px 0 0; }
+.pied-legal { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; margin-top: 12px; padding: 12px 0 24px; border-top: 1px solid var(--ligne); }
+.pied-legal p { margin: 0; }
+.pied-legal nav { display: flex; flex-wrap: wrap; }
+.pied-legal nav a { color: var(--encre); white-space: nowrap; }
+.pied-legal nav a:not(:last-child)::after {
+    content: "|"; color: #bdb0b8; margin: 0 10px; display: inline-block; text-decoration: none;
+}
+
+@media (max-width: 760px) {
+    .site-footer { font-size: .95rem; padding-top: 8px; }
+    .pied-groupes { display: block; padding-bottom: 0; border-bottom: 0; }
+    .pied-groupe { border-bottom: 1px solid #d9cfd5; }
+    .pied-groupe summary {
+        display: flex; justify-content: space-between; align-items: center;
+        margin: 0; padding: 16px 0; font-weight: 500; cursor: pointer;
+    }
+    .pied-groupe summary::after {
+        content: ""; width: 9px; height: 9px; margin-right: 6px;
+        border-right: 1.6px solid var(--encre); border-bottom: 1.6px solid var(--encre);
+        transform: rotate(45deg) translateY(-3px); transition: transform .2s ease;
+    }
+    .pied-groupe[open] summary::after { transform: rotate(-135deg) translateY(-3px); }
+    .pied-groupe ul { padding: 0 0 16px 2px; gap: 12px; font-size: .9rem; }
+    .pied-phrase { margin-top: 22px; }
+    .pied-legal { display: block; border-top: 0; padding-top: 0; }
+    .pied-legal p { margin-bottom: 6px; }
+    .pied-legal nav { line-height: 2; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .pied-groupe summary::after { transition: none; }
+}

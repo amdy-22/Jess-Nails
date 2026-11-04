@@ -237,3 +237,22 @@ document.addEventListener('DOMContentLoaded', function () {
         demarrer();
     });
 });
+
+// Pied de page : rubriques repliables sur téléphone, toujours ouvertes sur ordinateur
+document.addEventListener('DOMContentLoaded', function () {
+    var groupes = document.querySelectorAll('.pied-groupe');
+    if (!groupes.length) return;
+    var mobile = window.matchMedia('(max-width: 760px)');
+
+    function appliquer() {
+        groupes.forEach(function (g) { g.open = !mobile.matches; });
+    }
+    groupes.forEach(function (g) {
+        g.querySelector('summary').addEventListener('click', function (e) {
+            if (!mobile.matches) e.preventDefault();   // sur ordinateur, on ne replie pas
+        });
+    });
+    if (mobile.addEventListener) mobile.addEventListener('change', appliquer);
+    else mobile.addListener(appliquer);
+    appliquer();
+});

@@ -1,48 +1,91 @@
 <?php
-require_once __DIR__ . '/contact.php';
-$lienWhatsapp = lien_whatsapp($messageWhatsapp ?? null);
+/**
+ * Pied de page commun.
+ * Sur ordinateur : rubriques en colonnes. Sur téléphone : rubriques repliables (accordéon),
+ * puis contact, copyright et liens légaux.
+ */
+if (is_file(__DIR__ . '/contact.php')) {
+    require_once __DIR__ . '/contact.php';
+}
+$lienWhatsapp = function_exists('lien_whatsapp') ? lien_whatsapp($messageWhatsapp ?? null) : '';
+$categoriesPied = db()->query('SELECT nom, slug FROM categories ORDER BY ordre, id')->fetchAll();
+$utilisateurPied = current_user();
 ?>
-
-</div>
+    </div>
 </main>
 
 <footer class="site-footer">
-    <div class="conteneur footer-inner">
-        <div>
-            <p class="logo"><?= e(APP_NAME) ?></p>
-            <p class="discret">Soins du visage, manucure et pédicure à Cotonou.</p>
+    <div class="conteneur">
+
+        <div class="pied-groupes">
+            <details class="pied-groupe" open>
+                <summary>Prestations</summary>
+                <ul>
+                    <?php foreach ($categoriesPied as $cat): ?>
+                        <li><a href="<?= BASE_URL ?>/prestations.php#<?= e($cat['slug']) ?>"><?= e($cat['nom']) ?></a></li>
+                    <?php endforeach; ?>
+                    <li><a href="<?= BASE_URL ?>/prestations.php">Tous les soins et tarifs</a></li>
+                    <li><a href="<?= BASE_URL ?>/galerie.php">Galerie photos</a></li>
+                </ul>
+            </details>
+
+            <details class="pied-groupe" open>
+                <summary>Réservation</summary>
+                <ul>
+                    <li><a href="<?= BASE_URL ?>/reserver.php">Réserver une séance</a></li>
+                    <?php if ($utilisateurPied): ?>
+                        <li><a href="<?= BASE_URL ?>/profile.php">Mes rendez-vous</a></li>
+                    <?php else: ?>
+                        <li><a href="<?= BASE_URL ?>/connexion.php">Se connecter</a></li>
+                        <li><a href="<?= BASE_URL ?>/inscription.php">Créer un compte</a></li>
+                    <?php endif; ?>
+                    <li><a href="<?= BASE_URL ?>/conditions.php">Annulation et acompte</a></li>
+                </ul>
+            </details>
+
+            <details class="pied-groupe" open>
+                <summary>Horaires</summary>
+                <ul>
+                    <?php foreach (resume_horaires() as $ligneHoraire): ?>
+                        <li><?= e($ligneHoraire) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </details>
+
+            <details class="pied-groupe" open>
+                <summary>Nous trouver</summary>
+                <ul>
+                    <?php if (SALON_ADRESSE !== ''): ?><li><?= e(SALON_ADRESSE) ?></li><?php endif; ?>
+                    <li><a href="<?= BASE_URL ?>/contact.php">Plan d'accès et contact</a></li>
+                    <?php if ($lienWhatsapp): ?>
+                        <li><a href="<?= e($lienWhatsapp) ?>" target="_blank" rel="noopener">Écrire sur WhatsApp</a></li>
+                    <?php endif; ?>
+                </ul>
+            </details>
         </div>
-        <div>
-            <p class="footer-titre">Horaires</p>
-            <?php foreach (resume_horaires() as $ligneHoraire): ?>
-                <p class="discret"><?= e($ligneHoraire) ?></p>
-            <?php endforeach; ?>
+
+        <?php
+        // Phrase de contact, construite d'un bloc pour éviter les espaces parasites avant la ponctuation
+        $moyens = [$lienWhatsapp
+            ? '<a href="' . e($lienWhatsapp) . '" target="_blank" rel="noopener">sur WhatsApp</a>'
+            : '<a href="' . BASE_URL . '/contact.php">en nous contactant</a>'];
+        if (SALON_TELEPHONE !== '') {
+            $moyens[] = 'appeler le <a href="tel:' . e(SALON_TELEPHONE) . '">' . e(SALON_TELEPHONE) . '</a>';
+        }
+        ?>
+        <p class="pied-phrase">Vous pouvez aussi réserver <?= implode(' ou ', $moyens) ?>. Règlement sur place, ou acompte en ligne par Mobile Money.</p>
+
+        <p class="pied-lieu">Cotonou, Bénin</p>
+
+        <div class="pied-legal">
+            <p>Copyright &copy; <?= date('Y') ?> <?= e(APP_NAME) ?>. Tous droits réservés.</p>
+            <nav aria-label="Informations légales">
+                <a href="<?= BASE_URL ?>/conditions.php">Conditions de réservation</a>
+                <a href="<?= BASE_URL ?>/confidentialite.php">Confidentialité</a>
+                <a href="<?= BASE_URL ?>/mentions-legales.php">Mentions légales</a>
+                <a href="<?= BASE_URL ?>/contact.php">Contact</a>
+            </nav>
         </div>
-        <div>
-            <div>
-                <p class="footer-titre">Contact</p>
-                <?php if ($lienWhatsapp): ?>
-                    <p><a href="<?= e($lienWhatsapp) ?>" target="_blank" rel="noopener">WhatsApp</a></p>
-                <?php endif; ?>
-                <?php if (SALON_TELEPHONE !== ''): ?>
-                    <p class="discret"><?= e(SALON_TELEPHONE) ?></p>
-                <?php endif; ?>
-                <?php if (SALON_ADRESSE !== ''): ?>
-                    <p class="discret"><?= e(SALON_ADRESSE) ?></p>
-                <?php endif; ?>
-                <p><a href="<?= BASE_URL ?>/contact.php">Plan d'accès</a></p>
-            </div>
-            <p class="footer-titre">Paiement</p>
-            <p class="discret">Sur place, ou acompte en ligne par Mobile Money</p>
-        </div>
-    </div>
-    <div class="conteneur footer-bas discret">
-        <span>&copy; <?= date('Y') ?> <?= e(APP_NAME) ?></span>
-        <nav class="footer-liens" aria-label="Informations légales">
-            <a href="<?= BASE_URL ?>/conditions.php">Conditions de réservation</a>
-            <a href="<?= BASE_URL ?>/confidentialite.php">Confidentialité</a>
-            <a href="<?= BASE_URL ?>/mentions-legales.php">Mentions légales</a>
-        </nav>
     </div>
 </footer>
 
@@ -51,6 +94,7 @@ $lienWhatsapp = lien_whatsapp($messageWhatsapp ?? null);
         <?= icone_discussion() ?><span>WhatsApp</span>
     </a>
 <?php endif; ?>
+
 <script src="<?= BASE_URL ?>/assets/js/app.js"></script>
 </body>
 </html>
