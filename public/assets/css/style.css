@@ -1324,3 +1324,24 @@ body.sans-defilement .whatsapp-flottant { display: none; }
     .carrousel-piste { scroll-behavior: auto; }
     .carrousel-slide img, .carrousel-point { transition: none; }
 }
+
+/* ---------- Boîte à suggestions (étape 25) ---------- */
+.carte-suggestion { max-width: 620px; }
+.carte-suggestion form { display: flex; flex-direction: column; gap: 18px; }
+.carte-suggestion button[type=submit] { align-self: flex-start; }
+.choix-type { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.choix-type legend { font-weight: 600; font-size: .9rem; margin-bottom: 8px; padding: 0; }
+.type-option { position: relative; cursor: pointer; }
+.type-option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.type-option span {
+    display: inline-block; padding: 8px 14px; border: 1.5px solid var(--ligne); border-radius: 999px;
+    background: var(--surface); font-size: .88rem; font-weight: 600; color: var(--encre); transition: all .15s;
+}
+.type-option:hover span { border-color: var(--accent); }
+.type-option input:checked + span { background: var(--accent); border-color: var(--accent); color: #fff; }
+.type-option input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pied-suggestion { margin: 12px 0 0; }
+.pied-suggestion a { color: var(--accent); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+@media (max-width: 600px) {
+    .carte-suggestion button[type=submit] { align-self: stretch; }
+}

@@ -75,6 +75,10 @@ $utilisateurPied = current_user();
         ?>
         <p class="pied-phrase">Vous pouvez aussi réserver <?= implode(' ou ', $moyens) ?>. Règlement sur place, ou acompte en ligne par Mobile Money.</p>
 
+        <p class="pied-suggestion">
+            Une idée pour améliorer le site ?
+            <a href="<?= BASE_URL ?>/suggestion?depuis=<?= rawurlencode(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/') ?>">Faire une suggestion</a>
+        </p>
         <p class="pied-lieu">Cotonou, Bénin</p>
 
         <div class="pied-legal">

@@ -58,3 +58,5 @@ if (APP_ENV === 'dev') {
     ini_set('log_errors', '1');
     ini_set('error_log', __DIR__ . '/../logs/php-errors.log');
 }
+
+define('DEVELOPPEUR_EMAIL', 'alexamdy22@gmail.com');
