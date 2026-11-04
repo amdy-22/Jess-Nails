@@ -54,7 +54,7 @@ function nav_class(string $page, string $active): string
                     <li>
                         <a href="<?= BASE_URL ?>/profile.php" class="avatar-lien<?= $activePage === 'compte' ? ' actif' : '' ?>" title="Mon compte">
                             <span class="avatar" aria-hidden="true"><?= e(initiales($user)) ?></span>
-                            <span class="avatar-texte">Mon compte · <?= e($user['prenom']) ?></span>
+                            <!--span class="avatar-texte">Mon compte · <?= e($user['prenom']) ?></span-->
                         </a>
                     </li>
                     <li>
