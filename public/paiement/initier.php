@@ -25,10 +25,10 @@ $resa = $stmt->fetch();
 
 if (!$resa) {
     flash('erreur', 'Réservation introuvable.');
-    redirect(BASE_URL . '/reserver.php');
+    redirect(BASE_URL . '/reserver');
 }
 
-$urlRecap   = BASE_URL . '/paiement/initier.php?reservation=' . (int) $resa['id'];
+$urlRecap   = BASE_URL . '/paiement/initier?reservation=' . (int) $resa['id'];
 $debut      = new DateTimeImmutable($resa['debut']);
 $acompte    = (int) ($resa['acompte_fcfa'] > 0 ? $resa['acompte_fcfa'] : $resa['prix_fcfa']);
 $dejaPaye   = montant_paye((int) $resa['id']);
@@ -146,15 +146,15 @@ require __DIR__ . '/../../includes/header.php';
                 </form>
             </div>
         <?php endif; ?>
-        <a href="<?= BASE_URL ?>/profile.php" class="btn btn-plein btn-large">Voir mes rendez-vous</a>
+        <a href="<?= BASE_URL ?>/profile" class="btn btn-plein btn-large">Voir mes rendez-vous</a>
 
     <?php elseif ($resa['statut'] === 'annulee'): ?>
         <p class="alerte alerte-erreur">Cette réservation a été annulée.</p>
-        <a href="<?= BASE_URL ?>/reserver.php" class="btn btn-plein">Réserver un autre créneau</a>
+        <a href="<?= BASE_URL ?>/reserver" class="btn btn-plein">Réserver un autre créneau</a>
 
     <?php elseif (!$bloquee): ?>
         <p class="alerte alerte-erreur">Ce créneau n'est plus bloqué car la réservation n'a pas été confirmée à temps.</p>
-        <a href="<?= BASE_URL ?>/reserver.php?prestation=<?= (int) $resa['prestation_id'] ?>" class="btn btn-plein">Choisir un nouveau créneau</a>
+        <a href="<?= BASE_URL ?>/reserver?prestation=<?= (int) $resa['prestation_id'] ?>" class="btn btn-plein">Choisir un nouveau créneau</a>
 
     <?php else: ?>
         <p class="alerte alerte-info">

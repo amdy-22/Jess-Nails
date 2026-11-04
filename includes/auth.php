@@ -99,7 +99,7 @@ function require_login(): void
     if (!is_logged_in()) {
         $_SESSION['apres_connexion'] = $_SERVER['REQUEST_URI'] ?? null;
         flash('info', 'Pour réserver, connecte-toi ou crée ton compte en une minute.');
-        redirect(BASE_URL . '/connexion.php');
+        redirect(BASE_URL . '/connexion');
     }
 }
 

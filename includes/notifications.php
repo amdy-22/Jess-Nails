@@ -54,7 +54,7 @@ function notifier_reservation_confirmee(int $reservationId, bool $prevenirAdmin 
         . '<p>Merci d\'arriver 5 minutes avant ton rendez-vous. Pour toute question'
         . (SALON_TELEPHONE !== '' ? ', appelle-nous au <strong>' . e(SALON_TELEPHONE) . '</strong>' : ', réponds simplement à cet email')
         . '.</p>'
-        . '<p style="margin:24px 0 0;"><a href="' . e(BASE_URL . '/paiement/initier.php?reservation=' . (int) $r['id'])
+        . '<p style="margin:24px 0 0;"><a href="' . e(BASE_URL . '/paiement/initier?reservation=' . (int) $r['id'])
         . '" style="background:#8c3a5b;color:#ffffff;text-decoration:none;padding:12px 22px;border-radius:999px;display:inline-block;">Voir ma réservation</a></p>'
         . '<p style="color:#6e5f6c;font-size:13px;margin-top:24px;">À très bientôt,<br>L\'équipe ' . e(APP_NAME) . '</p>';
 
@@ -98,7 +98,7 @@ function notifier_reservation_confirmee(int $reservationId, bool $prevenirAdmin 
         . ($r['note_client']
             ? '<p><strong>Précision de la cliente :</strong><br>' . nl2br(e($r['note_client'])) . '</p>'
             : '')
-        . '<p style="margin:24px 0 0;"><a href="' . e(ADMIN_URL . '/reservations.php')
+        . '<p style="margin:24px 0 0;"><a href="' . e(ADMIN_URL . '/reservations')
         . '" style="background:#8c3a5b;color:#ffffff;text-decoration:none;padding:12px 22px;border-radius:999px;display:inline-block;">Ouvrir l\'administration</a></p>';
 
     envoyer_email(
@@ -142,7 +142,7 @@ function notifier_annulation(int $reservationId, bool $etaitConfirmee): void
         . ($paye > 0
             ? '<p>L\'institut a été prévenu pour le remboursement de ton acompte de ' . format_fcfa($paye) . '.</p>'
             : '')
-        . '<p style="margin:24px 0 0;"><a href="' . e(BASE_URL . '/reserver.php')
+        . '<p style="margin:24px 0 0;"><a href="' . e(BASE_URL . '/reserver')
         . '" style="background:#8c3a5b;color:#ffffff;text-decoration:none;padding:12px 22px;border-radius:999px;display:inline-block;">Réserver un autre créneau</a></p>';
     envoyer_email(
         [['email' => $r['email'], 'name' => $r['prenom'] . ' ' . $r['nom_client']]],
@@ -236,7 +236,7 @@ function notifier_annulation_par_institut(int $reservationId): void
         . '</strong> du <strong>' . e($quand) . '</strong>.</p>'
         . ($paye > 0 ? '<p>Ton acompte de ' . format_fcfa($paye) . ' te sera remboursé.</p>' : '')
         . '<p>N\'hésite pas à choisir un autre créneau, ou à répondre à cet email pour en parler.</p>'
-        . '<p style="margin:24px 0 0;"><a href="' . e(BASE_URL . '/reserver.php?prestation=' . (int) $r['prestation_id'])
+        . '<p style="margin:24px 0 0;"><a href="' . e(BASE_URL . '/reserver?prestation=' . (int) $r['prestation_id'])
         . '" style="background:#8c3a5b;color:#ffffff;text-decoration:none;padding:12px 22px;border-radius:999px;display:inline-block;">Choisir un autre créneau</a></p>';
 
     envoyer_email(

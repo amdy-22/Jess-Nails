@@ -13,5 +13,5 @@ require_once __DIR__ . '/legal.php';
         <li>Moins de <?= DELAI_ANNULATION_H ?> h avant, ou en cas d'absence, l'acompte reste acquis à l'institut.</li>
         <li>Au-delà de <?= RETARD_TOLERE_MIN ?> min de retard, le soin peut être écourté ou reporté.</li>
     </ul>
-    <p class="discret">En réservant, tu acceptes les <a href="<?= BASE_URL ?>/conditions.php" target="_blank">conditions de réservation</a>.</p>
+    <p class="discret">En réservant, tu acceptes les <a href="<?= BASE_URL ?>/conditions" target="_blank">conditions de réservation</a>.</p>
 </div>

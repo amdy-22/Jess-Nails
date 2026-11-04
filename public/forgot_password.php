@@ -12,7 +12,7 @@ const REINIT_DELAI_MIN    = 2;    // pas plus d'un email toutes les 2 min pour u
 const REINIT_MAX_SESSION  = 5;    // 5 demandes max par session et par quart d'heure
 
 if (is_logged_in()) {
-    redirect(BASE_URL . '/profile.php#profil');
+    redirect(BASE_URL . '/profile#profil');
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $demandes = array_filter($_SESSION['demandes_reinit'] ?? [], fn($t) => $t > time() - 900);
     if (count($demandes) >= REINIT_MAX_SESSION) {
         flash('erreur', 'Trop de demandes. Réessaie dans quelques minutes.');
-        redirect(BASE_URL . '/forgot_password.php');
+        redirect(BASE_URL . '/forgot_password');
     }
     $demandes[] = time();
     $_SESSION['demandes_reinit'] = $demandes;
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                      VALUES (?, ?, NOW() + INTERVAL ' . REINIT_VALIDITE_MIN . ' MINUTE)'
                 )->execute([$user['id'], hash('sha256', $jeton)]);
 
-                $lien = BASE_URL . '/reset_password.php?token=' . $jeton;
+                $lien = BASE_URL . '/reset_password?token=' . $jeton;
                 $contenu = '<p>Bonjour ' . e($user['prenom']) . ',</p>'
                     . '<p>Tu as demandé à changer ton mot de passe. Clique sur le bouton ci-dessous pour en choisir un nouveau :</p>'
                     . '<p style="margin:24px 0;"><a href="' . e($lien) . '" style="background:#8c3a5b;color:#ffffff;text-decoration:none;padding:12px 22px;border-radius:999px;display:inline-block;">Choisir un nouveau mot de passe</a></p>'
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     flash('succes', 'Si un compte existe avec cette adresse, un email avec un lien vient de lui être envoyé. Pense à vérifier tes spams.');
-    redirect(BASE_URL . '/connexion.php');
+    redirect(BASE_URL . '/connexion');
 }
 
 $pageTitle = 'Mot de passe oublié';
@@ -89,7 +89,7 @@ require __DIR__ . '/../includes/header.php';
         <button type="submit" class="btn btn-plein">Recevoir le lien</button>
     </form>
 
-    <p class="bas-formulaire"><a href="<?= BASE_URL ?>/connexion.php">Retour à la connexion</a></p>
+    <p class="bas-formulaire"><a href="<?= BASE_URL ?>/connexion">Retour à la connexion</a></p>
 </section>
 
 <?php require __DIR__ . '/../includes/footer.php';

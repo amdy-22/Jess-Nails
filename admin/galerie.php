@@ -6,7 +6,7 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/galerie.php';
 require_admin();
 
-$urlPage = ADMIN_URL . '/galerie.php';
+$urlPage = ADMIN_URL . '/galerie';
 
 // =====================================================
 // Traitements
@@ -137,7 +137,7 @@ function select_categories(array $categories, ?int $choisie, string $id): string
 <section class="entete-page">
     <h1>Galerie photos</h1>
     <p class="discret"><?= count($photos) ?> photo<?= count($photos) > 1 ? 's' : '' ?>, dont <?= $nbVisibles ?> visible<?= $nbVisibles > 1 ? 's' : '' ?> sur le site.
-        <a href="<?= BASE_URL ?>/galerie.php" target="_blank">Voir la galerie</a></p>
+        <a href="<?= BASE_URL ?>/galerie" target="_blank">Voir la galerie</a></p>
 </section>
 
 <form method="post" enctype="multipart/form-data" class="resa-bloc galerie-envoi">

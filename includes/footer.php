@@ -22,24 +22,24 @@ $utilisateurPied = current_user();
                 <summary>Prestations</summary>
                 <ul>
                     <?php foreach ($categoriesPied as $cat): ?>
-                        <li><a href="<?= BASE_URL ?>/prestations.php#<?= e($cat['slug']) ?>"><?= e($cat['nom']) ?></a></li>
+                        <li><a href="<?= BASE_URL ?>/prestations#<?= e($cat['slug']) ?>"><?= e($cat['nom']) ?></a></li>
                     <?php endforeach; ?>
-                    <li><a href="<?= BASE_URL ?>/prestations.php">Tous les soins et tarifs</a></li>
-                    <li><a href="<?= BASE_URL ?>/galerie.php">Galerie photos</a></li>
+                    <li><a href="<?= BASE_URL ?>/prestations">Tous les soins et tarifs</a></li>
+                    <li><a href="<?= BASE_URL ?>/galerie">Galerie photos</a></li>
                 </ul>
             </details>
 
             <details class="pied-groupe" open>
                 <summary>Réservation</summary>
                 <ul>
-                    <li><a href="<?= BASE_URL ?>/reserver.php">Réserver une séance</a></li>
+                    <li><a href="<?= BASE_URL ?>/reserver">Réserver une séance</a></li>
                     <?php if ($utilisateurPied): ?>
-                        <li><a href="<?= BASE_URL ?>/profile.php">Mes rendez-vous</a></li>
+                        <li><a href="<?= BASE_URL ?>/profile">Mes rendez-vous</a></li>
                     <?php else: ?>
-                        <li><a href="<?= BASE_URL ?>/connexion.php">Se connecter</a></li>
-                        <li><a href="<?= BASE_URL ?>/inscription.php">Créer un compte</a></li>
+                        <li><a href="<?= BASE_URL ?>/connexion">Se connecter</a></li>
+                        <li><a href="<?= BASE_URL ?>/inscription">Créer un compte</a></li>
                     <?php endif; ?>
-                    <li><a href="<?= BASE_URL ?>/conditions.php">Annulation et acompte</a></li>
+                    <li><a href="<?= BASE_URL ?>/conditions">Annulation et acompte</a></li>
                 </ul>
             </details>
 
@@ -56,7 +56,7 @@ $utilisateurPied = current_user();
                 <summary>Nous trouver</summary>
                 <ul>
                     <?php if (SALON_ADRESSE !== ''): ?><li><?= e(SALON_ADRESSE) ?></li><?php endif; ?>
-                    <li><a href="<?= BASE_URL ?>/contact.php">Plan d'accès et contact</a></li>
+                    <li><a href="<?= BASE_URL ?>/contact">Plan d'accès et contact</a></li>
                     <?php if ($lienWhatsapp): ?>
                         <li><a href="<?= e($lienWhatsapp) ?>" target="_blank" rel="noopener">Écrire sur WhatsApp</a></li>
                     <?php endif; ?>
@@ -68,7 +68,7 @@ $utilisateurPied = current_user();
         // Phrase de contact, construite d'un bloc pour éviter les espaces parasites avant la ponctuation
         $moyens = [$lienWhatsapp
             ? '<a href="' . e($lienWhatsapp) . '" target="_blank" rel="noopener">sur WhatsApp</a>'
-            : '<a href="' . BASE_URL . '/contact.php">en nous contactant</a>'];
+            : '<a href="' . BASE_URL . '/contact">en nous contactant</a>'];
         if (SALON_TELEPHONE !== '') {
             $moyens[] = 'appeler le <a href="tel:' . e(SALON_TELEPHONE) . '">' . e(SALON_TELEPHONE) . '</a>';
         }
@@ -80,10 +80,10 @@ $utilisateurPied = current_user();
         <div class="pied-legal">
             <p>Copyright &copy; <?= date('Y') ?> <?= e(APP_NAME) ?>. Tous droits réservés.</p>
             <nav aria-label="Informations légales">
-                <a href="<?= BASE_URL ?>/conditions.php">Conditions de réservation</a>
-                <a href="<?= BASE_URL ?>/confidentialite.php">Confidentialité</a>
-                <a href="<?= BASE_URL ?>/mentions-legales.php">Mentions légales</a>
-                <a href="<?= BASE_URL ?>/contact.php">Contact</a>
+                <a href="<?= BASE_URL ?>/conditions">Conditions de réservation</a>
+                <a href="<?= BASE_URL ?>/confidentialite">Confidentialité</a>
+                <a href="<?= BASE_URL ?>/mentions-legales">Mentions légales</a>
+                <a href="<?= BASE_URL ?>/contact">Contact</a>
             </nav>
         </div>
     </div>

@@ -6,7 +6,7 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/reservation.php';
 require_admin();
 
-$urlPage = ADMIN_URL . '/horaires.php';
+$urlPage = ADMIN_URL . '/horaires';
 $jours   = [1 => 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -165,7 +165,7 @@ require __DIR__ . '/../includes/admin_header.php';
                             <strong><?= e(ucfirst(format_date_fr($d))) ?></strong>
                             <?php if ($f['motif']): ?><br><span class="discret"><?= e($f['motif']) ?></span><?php endif; ?>
                             <?php if ($f['nb_rdv'] > 0): ?>
-                                <br><a class="badge badge-attente" href="<?= ADMIN_URL ?>/reservations.php?du=<?= $f['date'] ?>&amp;au=<?= $f['date'] ?>&amp;statut=confirmee">
+                                <br><a class="badge badge-attente" href="<?= ADMIN_URL ?>/reservations?du=<?= $f['date'] ?>&amp;au=<?= $f['date'] ?>&amp;statut=confirmee">
                                     <?= (int) $f['nb_rdv'] ?> rdv à annuler</a>
                             <?php endif; ?>
                         </div>

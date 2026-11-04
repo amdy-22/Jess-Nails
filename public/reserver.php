@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 enregistrer_soins_reservation($reservationId, $prestation);
                 $pdo->commit();
 
-                redirect(BASE_URL . '/paiement/initier.php?reservation=' . $reservationId);
+                redirect(BASE_URL . '/paiement/initier?reservation=' . $reservationId);
             }
         } catch (Throwable $ex) {
             if ($pdo->inTransaction()) {

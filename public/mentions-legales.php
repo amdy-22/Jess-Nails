@@ -44,7 +44,7 @@ require __DIR__ . '/../includes/header.php';
     <h2>Droit applicable</h2>
     <p>Ce site est soumis au droit béninois, notamment à la loi n° 2017-20 du 20 avril 2018 portant Code du numérique en République du Bénin.</p>
 
-    <p class="liens-legaux">Voir aussi : <a href="<?= BASE_URL ?>/confidentialite.php">Confidentialité</a> · <a href="<?= BASE_URL ?>/conditions.php">Conditions de réservation</a></p>
+    <p class="liens-legaux">Voir aussi : <a href="<?= BASE_URL ?>/confidentialite">Confidentialité</a> · <a href="<?= BASE_URL ?>/conditions">Conditions de réservation</a></p>
 </article>
 
 <?php require __DIR__ . '/../includes/footer.php';

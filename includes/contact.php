@@ -9,7 +9,7 @@ const SALON_WHATSAPP = '97000000';                 // ex. '01 97 00 00 00'
 
 // Position GPS pour la carte, "latitude,longitude" (clic droit sur Google Maps > copier les coordonnées).
 // Vide = pas de carte, juste un lien "Ouvrir dans Google Maps" construit depuis l'adresse.
-const SALON_GPS = '6.3703,2.4140';                      // ex. '6.3703,2.4140'
+const SALON_GPS = '6.3776546, 2.4645233';                      // ex. '6.3703,2.4140'
 
 // Message pré-rempli par défaut quand on ouvre WhatsApp
 const WHATSAPP_MESSAGE_DEFAUT = 'Bonjour, j\'ai une question pour ' . APP_NAME . '.';

@@ -5,7 +5,7 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_admin();
 
-$urlPage = ADMIN_URL . '/praticiennes.php';
+$urlPage = ADMIN_URL . '/praticiennes';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
@@ -121,12 +121,12 @@ require __DIR__ . '/../includes/admin_header.php';
                     </td>
                     <td class="nowrap"><?= (int) $p['aujourdhui'] ?> rdv</td>
                     <td class="nowrap">
-                        <a href="<?= ADMIN_URL ?>/reservations.php?praticienne=<?= (int) $p['id'] ?>&amp;statut=confirmee"><?= (int) $p['a_venir'] ?> rdv</a>
+                        <a href="<?= ADMIN_URL ?>/reservations?praticienne=<?= (int) $p['id'] ?>&amp;statut=confirmee"><?= (int) $p['a_venir'] ?> rdv</a>
                     </td>
                     <td><span class="badge badge-<?= $p['actif'] ? 'ok' : 'neutre' ?>"><?= $p['actif'] ? 'Active' : 'Inactive' ?></span></td>
                     <td>
                         <div class="actions-ligne">
-                            <a class="btn-action" href="<?= ADMIN_URL ?>/planning-praticienne.php?id=<?= (int) $p['id'] ?>">Planning</a>
+                            <a class="btn-action" href="<?= ADMIN_URL ?>/planning-praticienne?id=<?= (int) $p['id'] ?>">Planning</a>
                             <form method="post" <?= $p['actif'] && $p['a_venir'] ? 'data-confirmer="' . e($p['nom'] . ' a ' . $p['a_venir'] . ' rendez-vous à venir. Ils restent maintenus. La désactiver quand même ?') . '"' : '' ?>>
                                 <?= csrf_field() ?>
                                 <input type="hidden" name="action" value="basculer">

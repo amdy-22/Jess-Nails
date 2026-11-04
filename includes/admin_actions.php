@@ -41,7 +41,7 @@ function traiter_action_admin(): void
     csrf_verify();
     $retour = $_POST['retour'] ?? '';
     if (!is_string($retour) || !str_starts_with($retour, '/') || str_starts_with($retour, '//')) {
-        $retour = ADMIN_URL . '/reservations.php';
+        $retour = ADMIN_URL . '/reservations';
     }
 
     $stmt = db()->prepare(
@@ -94,7 +94,7 @@ function boutons_actions_admin(array $r, string $retour): string
     $html = '';
     foreach (actions_admin($r) as $action => $libelle) {
         if ($action === 'deplacer') {   // simple lien vers la page de déplacement
-            $html .= '<a class="btn-action" href="' . ADMIN_URL . '/deplacer.php?reservation=' . (int) $r['id'] . '">Déplacer</a>';
+            $html .= '<a class="btn-action" href="' . ADMIN_URL . '/deplacer?reservation=' . (int) $r['id'] . '">Déplacer</a>';
             continue;
         }
         $confirmer = in_array($action, ['annuler', 'absente', 'rembourse'], true)

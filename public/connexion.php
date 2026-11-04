@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../includes/auth.php';
 
 if (is_logged_in()) {
-    redirect_after_auth(BASE_URL . '/index.php');
+    redirect_after_auth(BASE_URL . '/');
 }
 
 // Limite simple : 5 essais ratés, puis blocage 5 minutes (par session)
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $bloqueJusqua = $_SESSION['bloque_jusqua'] ?? 0;
     if (time() < $bloqueJusqua) {
         $_SESSION['erreur_connexion'] = 'Trop de tentatives. Réessaie dans quelques minutes.';
-        redirect(BASE_URL . '/connexion.php');
+        redirect(BASE_URL . '/connexion');
     }
 
     $email = $_POST['email'] ?? '';
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         set_old(['email' => $email]);
         $_SESSION['erreur_connexion'] = 'Email ou mot de passe incorrect.';
-        redirect(BASE_URL . '/connexion.php');
+        redirect(BASE_URL . '/connexion');
     }
 
     unset($_SESSION['essais'], $_SESSION['bloque_jusqua']);
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     login_user($user);
     flash('succes', 'Bonjour ' . $user['prenom'] . ' !');
 
-    $parDefaut = $user['role'] === 'admin' ? ADMIN_URL . '/index.php' : BASE_URL . '/index.php';
+    $parDefaut = $user['role'] === 'admin' ? ADMIN_URL . '/' : BASE_URL . '/';
     redirect_after_auth($parDefaut);
 }
 
@@ -67,14 +67,14 @@ require __DIR__ . '/../includes/header.php';
         <div class="champ">
             <label for="mot_de_passe">Mot de passe</label>
             <input type="password" id="mot_de_passe" name="mot_de_passe" autocomplete="current-password" required>
-            <a href="<?= BASE_URL ?>/forgot_password.php" class="lien-oubli">Mot de passe oublié ?</a>
+            <a href="<?= BASE_URL ?>/forgot_password" class="lien-oubli">Mot de passe oublié ?</a>
         </div>
 
         <button type="submit" class="btn btn-plein">Se connecter</button>
     </form>
 
     <p class="bas-formulaire">
-        Pas encore de compte ? <a href="<?= BASE_URL ?>/inscription.php">Créer un compte</a>
+        Pas encore de compte ? <a href="<?= BASE_URL ?>/inscription">Créer un compte</a>
     </p>
 </section>
 

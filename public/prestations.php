@@ -79,7 +79,7 @@ require __DIR__ . '/../includes/header.php';
                         </dl>
                     </div>
 
-                    <a href="<?= BASE_URL ?>/reserver.php?prestation=<?= (int) $soin['id'] ?>" class="btn btn-plein">
+                    <a href="<?= BASE_URL ?>/reserver?prestation=<?= (int) $soin['id'] ?>" class="btn btn-plein">
                         Réserver ce soin
                     </a>
                     <?php if ($q = lien_whatsapp('Bonjour, j\'ai une question sur le soin « ' . $soin['nom'] . ' ».')): ?>

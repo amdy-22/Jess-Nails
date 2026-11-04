@@ -10,6 +10,21 @@ Options -Indexes
     RewriteCond %{HTTP:X-Forwarded-Proto} !=https
     RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # ---- URLs sans .php ----
+    # 1) Anciennes adresses en .php : redirection visible vers la version propre.
+    #    Seulement pour les GET : un formulaire envoyé (POST) ou le webhook FedaPay ne doivent pas être redirigés.
+    RewriteCond %{REQUEST_METHOD} =GET
+    RewriteCond %{THE_REQUEST} \s(/(?:[^?\s]*/)?)index\.php[\s?]
+    RewriteRule ^ %1 [R=301,L]
+    RewriteCond %{REQUEST_METHOD} =GET
+    RewriteCond %{THE_REQUEST} \s(/[^?\s]+?)\.php[\s?]
+    RewriteRule ^ %1 [R=301,L]
+
+    # 2) Adresse propre : on sert le fichier .php correspondant, sans que ça se voie
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}\.php -f
+    RewriteRule ^(.+?)/?$ $1.php [L]
 </IfModule>
 
 # Bloquer les fichiers cachés (.git, .env, .gitignore...) et les fichiers sensibles

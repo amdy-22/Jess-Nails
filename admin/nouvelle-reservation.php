@@ -8,7 +8,7 @@ require_once __DIR__ . '/../includes/reservation.php';
 require_once __DIR__ . '/../includes/notifications.php';
 require_admin();
 
-$urlPage = ADMIN_URL . '/nouvelle-reservation.php';
+$urlPage = ADMIN_URL . '/nouvelle-reservation';
 const SOURCES_ADMIN = ['telephone' => 'Téléphone', 'whatsapp' => 'WhatsApp', 'sur_place' => 'Sur place (sans rendez-vous)'];
 const DELAI_ADMIN = -14;   // l'admin peut réserver le quart d'heure en cours
 
@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         flash('succes', $message);
-        redirect(ADMIN_URL . '/reservations.php?du=' . $jour->format('Y-m-d') . '&au=' . $jour->format('Y-m-d'));
+        redirect(ADMIN_URL . '/reservations?du=' . $jour->format('Y-m-d') . '&au=' . $jour->format('Y-m-d'));
     }
 
     redirect($urlPage);

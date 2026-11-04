@@ -8,7 +8,7 @@ require_once __DIR__ . '/../includes/notifications.php';
 require_login();
 
 $client   = current_user();
-$urlPage  = BASE_URL . '/profile.php';
+$urlPage  = BASE_URL . '/profile';
 
 // =====================================================
 // Traitement des formulaires
@@ -156,13 +156,13 @@ function carte_rdv(array $r, bool $avecActions): void
             <span class="badge badge-<?= e($ton) ?>"><?= e($libelle) ?></span>
 
             <?php if ($avecActions && $r['statut'] === 'en_attente_paiement'): ?>
-                <a class="btn btn-petit" href="<?= BASE_URL ?>/paiement/initier.php?reservation=<?= (int) $r['id'] ?>">Confirmer</a>
+                <a class="btn btn-petit" href="<?= BASE_URL ?>/paiement/initier?reservation=<?= (int) $r['id'] ?>">Confirmer</a>
             <?php elseif ($avecActions && $r['statut'] === 'confirmee' && (int) $r['paye'] === 0): ?>
-                <a class="lien-discret" href="<?= BASE_URL ?>/paiement/initier.php?reservation=<?= (int) $r['id'] ?>">Payer l'acompte en ligne</a>
+                <a class="lien-discret" href="<?= BASE_URL ?>/paiement/initier?reservation=<?= (int) $r['id'] ?>">Payer l'acompte en ligne</a>
             <?php endif; ?>
 
             <?php if ($avecActions && deplacement_possible($r)): ?>
-                <a class="lien-discret" href="<?= BASE_URL ?>/deplacer.php?reservation=<?= (int) $r['id'] ?>">Déplacer</a>
+                <a class="lien-discret" href="<?= BASE_URL ?>/deplacer?reservation=<?= (int) $r['id'] ?>">Déplacer</a>
             <?php endif; ?>
 
             <?php if ($avecActions && annulation_possible($r, (bool) $r['bloquee'])): ?>
@@ -190,13 +190,13 @@ require __DIR__ . '/../includes/header.php';
         <h1>Bonjour <?= e($client['prenom']) ?></h1>
         <p class="discret">Retrouve ici tes rendez-vous et tes informations.</p>
     </div>
-    <a href="<?= BASE_URL ?>/reserver.php" class="btn btn-plein">Nouvelle réservation</a>
+    <a href="<?= BASE_URL ?>/reserver" class="btn btn-plein">Nouvelle réservation</a>
 </section>
 
 <section class="bloc-compte">
     <h2>Mes rendez-vous à venir</h2>
     <?php if (!$aVenir): ?>
-        <p class="vide">Aucun rendez-vous prévu. <a href="<?= BASE_URL ?>/prestations.php">Découvrir nos soins</a></p>
+        <p class="vide">Aucun rendez-vous prévu. <a href="<?= BASE_URL ?>/prestations">Découvrir nos soins</a></p>
     <?php else: ?>
         <div class="liste-rdv">
             <?php foreach ($aVenir as $r) { carte_rdv($r, true); } ?>

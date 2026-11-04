@@ -8,7 +8,7 @@ require_admin();
 const DOSSIER_IMAGES = __DIR__ . '/../public/assets/images/prestations';
 const IMAGE_MAX_OCTETS = 2 * 1024 * 1024;   // 2 Mo
 
-$urlPage = ADMIN_URL . '/prestations.php';
+$urlPage = ADMIN_URL . '/prestations';
 
 /** "Soins du visage" -> "soins-du-visage" */
 function slugifier(string $texte): string

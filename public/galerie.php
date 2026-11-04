@@ -33,7 +33,7 @@ require __DIR__ . '/../includes/header.php';
 
     <?php if (count($filtres) > 1): ?>
         <nav class="filtres" aria-label="Filtrer par catégorie">
-            <a href="<?= BASE_URL ?>/galerie.php" class="pastille<?= $categorieActive ? '' : ' pastille-active' ?>">Tout</a>
+            <a href="<?= BASE_URL ?>/galerie" class="pastille<?= $categorieActive ? '' : ' pastille-active' ?>">Tout</a>
             <?php foreach ($filtres as $f): ?>
                 <a href="?categorie=<?= e($f['slug']) ?>" class="pastille<?= $categorieActive && $categorieActive['id'] === $f['id'] ? ' pastille-active' : '' ?>">
                     <?= e($f['nom']) ?>
@@ -59,7 +59,7 @@ require __DIR__ . '/../includes/header.php';
     </div>
 
     <p class="galerie-cta">
-        <a href="<?= BASE_URL ?>/reserver.php" class="btn btn-plein">Réserver une séance</a>
+        <a href="<?= BASE_URL ?>/reserver" class="btn btn-plein">Réserver une séance</a>
     </p>
 <?php endif; ?>
 

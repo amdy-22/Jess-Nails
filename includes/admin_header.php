@@ -8,10 +8,18 @@ $pageTitle   = $pageTitle   ?? 'Administration';
 $activeAdmin = $activeAdmin ?? '';
 $admin       = current_user();
 
-function admin_lien(string $page, string $fichier, string $libelle, string $actif): string
+function admin_lien(string $page, string $fichier, string $libelle, string $actif, int $compteur = 0): string
 {
     $classe = $page === $actif ? ' class="actif" aria-current="page"' : '';
-    return '<li><a href="' . ADMIN_URL . '/' . $fichier . '"' . $classe . '>' . e($libelle) . '</a></li>';
+    $pastille = $compteur > 0 ? ' <span class="compteur-nav" aria-label="' . $compteur . ' non lus">' . $compteur . '</span>' : '';
+    return '<li><a href="' . ADMIN_URL . '/' . $fichier . '"' . $classe . '>' . e($libelle) . $pastille . '</a></li>';
+}
+
+// Messages de contact non lus (0 si la table n'existe pas encore)
+try {
+    $messagesNonLus = (int) db()->query('SELECT COUNT(*) FROM messages_contact WHERE lu = 0')->fetchColumn();
+} catch (Throwable $e) {
+    $messagesNonLus = 0;
 }
 ?>
 <!DOCTYPE html>
@@ -30,7 +38,7 @@ function admin_lien(string $page, string $fichier, string $libelle, string $acti
 
 <header class="site-header admin-header">
     <div class="conteneur conteneur-large header-inner">
-        <a href="<?= ADMIN_URL ?>/index.php" class="logo"><?= e(APP_NAME) ?> <span class="logo-admin">admin</span></a>
+        <a href="<?= ADMIN_URL ?>/" class="logo"><?= e(APP_NAME) ?> <span class="logo-admin">admin</span></a>
 
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principal" aria-label="Ouvrir le menu">
             <span class="menu-icone" aria-hidden="true"><span></span><span></span><span></span></span>
@@ -39,17 +47,17 @@ function admin_lien(string $page, string $fichier, string $libelle, string $acti
 
         <nav id="menu-principal" class="nav">
             <ul class="nav-liens">
-                <?= admin_lien('tableau', 'index.php', 'Tableau de bord', $activeAdmin) ?>
-                <?= admin_lien('reservations', 'reservations.php', 'Réservations', $activeAdmin) ?>
-                <?= admin_lien('prestations', 'prestations.php', 'Prestations', $activeAdmin) ?>
-                <?= admin_lien('galerie', 'galerie.php', 'Galerie', $activeAdmin) ?>
-                <?= admin_lien('praticiennes', 'praticiennes.php', 'Praticiennes', $activeAdmin) ?>
-                <?= admin_lien('horaires', 'horaires.php', 'Horaires', $activeAdmin) ?>
+                <?= admin_lien('tableau', '', 'Tableau de bord', $activeAdmin) ?>
+                <?= admin_lien('reservations', 'reservations', 'Réservations', $activeAdmin) ?>
+                <?= admin_lien('prestations', 'prestations', 'Prestations', $activeAdmin) ?>
+                <?= admin_lien('galerie', 'galerie', 'Galerie', $activeAdmin) ?>
+                <?= admin_lien('praticiennes', 'praticiennes', 'Praticiennes', $activeAdmin) ?>
+                <?= admin_lien('horaires', 'horaires', 'Horaires', $activeAdmin) ?>
             </ul>
             <ul class="nav-compte">
-                <li><a href="<?= BASE_URL ?>/index.php">Voir le site</a></li>
+                <li><a href="<?= BASE_URL ?>/">Voir le site</a></li>
                 <li>
-                    <form action="<?= BASE_URL ?>/deconnexion.php" method="post" class="form-inline">
+                    <form action="<?= BASE_URL ?>/deconnexion" method="post" class="form-inline">
                         <?= csrf_field() ?>
                         <button type="submit" class="lien-bouton">Déconnexion (<?= e($admin['prenom']) ?>)</button>
                     </form>

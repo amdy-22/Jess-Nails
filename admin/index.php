@@ -46,7 +46,7 @@ $aRembourser = db()->query(sql_reservations_admin() . "
       AND EXISTS (SELECT 1 FROM paiements pa WHERE pa.reservation_id = r.id AND pa.statut = 'approuve')
     ORDER BY r.debut")->fetchAll();
 
-$retour = ADMIN_URL . '/index.php';
+$retour = ADMIN_URL . '/';
 $moisNom = explode(' ', format_date_fr($debutMois))[2];
 
 $pageTitle   = 'Tableau de bord';
@@ -60,8 +60,8 @@ require __DIR__ . '/../includes/admin_header.php';
         <p class="discret"><?= e(ucfirst(format_date_fr(new DateTimeImmutable()))) ?></p>
     </div>
     <div class="actions">
-        <a href="<?= ADMIN_URL ?>/nouvelle-reservation.php" class="btn btn-plein">Nouveau rendez-vous</a>
-        <a href="<?= ADMIN_URL ?>/reservations.php" class="btn">Toutes les réservations</a>
+        <a href="<?= ADMIN_URL ?>/nouvelle-reservation" class="btn btn-plein">Nouveau rendez-vous</a>
+        <a href="<?= ADMIN_URL ?>/reservations" class="btn">Toutes les réservations</a>
     </div>
 </section>
 

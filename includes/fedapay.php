@@ -74,7 +74,7 @@ function fedapay_creer_paiement(array $resa, array $client, int $montant): array
         'description'  => 'Acompte réservation #' . $resa['id'] . ' - ' . $resa['soin'],
         'amount'       => $montant,
         'currency'     => ['iso' => 'XOF'],
-        'callback_url' => BASE_URL . '/paiement/retour.php',
+        'callback_url' => BASE_URL . '/paiement/retour',
         'customer'     => $client_complet,
     ];
 

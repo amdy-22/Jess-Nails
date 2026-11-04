@@ -13,10 +13,10 @@ $stmt->execute([(int) ($_GET['id'] ?? $_POST['id'] ?? 0)]);
 $prat = $stmt->fetch();
 if (!$prat) {
     flash('erreur', 'Praticienne introuvable.');
-    redirect(ADMIN_URL . '/praticiennes.php');
+    redirect(ADMIN_URL . '/praticiennes');
 }
 $id      = (int) $prat['id'];
-$urlPage = ADMIN_URL . '/planning-praticienne.php?id=' . $id;
+$urlPage = ADMIN_URL . '/planning-praticienne?id=' . $id;
 
 /** Horaires de l'institut par jour : [n => ['09:00', '19:00'] ou null si fermé] */
 $institut = [];
@@ -182,7 +182,7 @@ require __DIR__ . '/../includes/admin_header.php';
 ?>
 
 <section class="entete-page">
-    <p><a href="<?= ADMIN_URL ?>/praticiennes.php">← Praticiennes</a></p>
+    <p><a href="<?= ADMIN_URL ?>/praticiennes">← Praticiennes</a></p>
     <h1>Planning de <?= e($prat['nom']) ?></h1>
     <p class="discret">
         <?= $personnalise
@@ -196,7 +196,7 @@ require __DIR__ . '/../includes/admin_header.php';
         <?= count($conflits) ?> rendez-vous confirmé<?= count($conflits) > 1 ? 's' : '' ?> à venir tombe<?= count($conflits) > 1 ? 'nt' : '' ?>
         en dehors de son planning actuel :
         <?php foreach (array_slice($conflits, 0, 5) as $c): ?>
-            <a href="<?= ADMIN_URL ?>/reservations.php?du=<?= substr($c['debut'], 0, 10) ?>&amp;au=<?= substr($c['debut'], 0, 10) ?>&amp;praticienne=<?= $id ?>">
+            <a href="<?= ADMIN_URL ?>/reservations?du=<?= substr($c['debut'], 0, 10) ?>&amp;au=<?= substr($c['debut'], 0, 10) ?>&amp;praticienne=<?= $id ?>">
                 <?= e(format_date_fr(new DateTimeImmutable($c['debut']), true)) ?></a><?= $c !== end($conflits) ? ',' : '.' ?>
         <?php endforeach; ?>
         <?= count($conflits) > 5 ? '…' : '' ?>

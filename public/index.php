@@ -24,14 +24,14 @@ require __DIR__ . '/../includes/header.php';
     <h1>Prenez soin de vous, on s'occupe du reste.</h1>
     <p>Soins du visage, manucure et pédicure. Choisissez votre soin et votre créneau en ligne, puis réglez sur place ou par Mobile Money.</p>
     <div class="actions">
-        <a href="<?= BASE_URL ?>/reserver.php" class="btn btn-plein">Réserver une séance</a>
-        <a href="<?= BASE_URL ?>/prestations.php" class="btn">Voir les prestations</a>
+        <a href="<?= BASE_URL ?>/reserver" class="btn btn-plein">Réserver une séance</a>
+        <a href="<?= BASE_URL ?>/prestations" class="btn">Voir les prestations</a>
     </div>
 </section>
 
 <section class="grille-categories">
     <?php foreach ($categories as $cat): ?>
-        <a class="carte-categorie" href="<?= BASE_URL ?>/prestations.php#<?= e($cat['slug']) ?>">
+        <a class="carte-categorie" href="<?= BASE_URL ?>/prestations#<?= e($cat['slug']) ?>">
             <h2><?= e($cat['nom']) ?></h2>
             <p class="discret"><?= (int) $cat['nb'] ?> soin<?= $cat['nb'] > 1 ? 's' : '' ?></p>
             <?php if ($cat['prix_min'] !== null): ?>
@@ -45,12 +45,12 @@ require __DIR__ . '/../includes/header.php';
     <section class="accueil-galerie" aria-roledescription="carrousel" aria-label="Nos réalisations">
         <div class="accueil-galerie-entete">
             <h2>Nos réalisations</h2>
-            <a href="<?= BASE_URL ?>/galerie.php">Voir toute la galerie</a>
+            <a href="<?= BASE_URL ?>/galerie">Voir toute la galerie</a>
         </div>
         <div class="carrousel" data-carrousel>
             <div class="carrousel-piste" tabindex="0">
                 <?php foreach ($dernieresPhotos as $i => $ph): ?>
-                    <a href="<?= BASE_URL ?>/galerie.php" class="carrousel-slide"
+                    <a href="<?= BASE_URL ?>/galerie" class="carrousel-slide"
                        aria-label="Photo <?= $i + 1 ?> sur <?= count($dernieresPhotos) ?><?= $ph['legende'] ? ' : ' . e($ph['legende']) : '' ?>">
                         <img src="<?= e(url_photo($ph['fichier'], true)) ?>" alt="<?= e($ph['legende'] ?? 'Réalisation ' . APP_NAME) ?>"
                              width="<?= (int) $ph['largeur'] ?>" height="<?= (int) $ph['hauteur'] ?>" <?= $i > 2 ? 'loading="lazy"' : '' ?>>

@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $demande) {
 
             unset($_SESSION['essais'], $_SESSION['bloque_jusqua']);   // débloque la connexion
             flash('succes', 'Ton mot de passe est modifié. Tu peux te connecter.');
-            redirect(BASE_URL . '/connexion.php');
+            redirect(BASE_URL . '/connexion');
         }
         $pdo->rollBack();
         $demande = null;   // déjà utilisé entre-temps
@@ -66,7 +66,7 @@ require __DIR__ . '/../includes/header.php';
     <?php if (!$demande): ?>
         <h1>Lien expiré ou déjà utilisé</h1>
         <p>Ce lien n'est plus valable. Il expire au bout d'1 heure et ne fonctionne qu'une seule fois.</p>
-        <a href="<?= BASE_URL ?>/forgot_password.php" class="btn btn-plein">Demander un nouveau lien</a>
+        <a href="<?= BASE_URL ?>/forgot_password" class="btn btn-plein">Demander un nouveau lien</a>
     <?php else: ?>
         <h1>Nouveau mot de passe</h1>
         <p class="discret">Pour le compte <strong><?= e($demande['email']) ?></strong></p>

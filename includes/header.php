@@ -30,7 +30,7 @@ function nav_class(string $page, string $active): string
 
 <header class="site-header entete-public">
     <div class="conteneur header-inner">
-        <a href="<?= BASE_URL ?>/index.php" class="logo"><?= e(APP_NAME) ?></a>
+        <a href="<?= BASE_URL ?>/" class="logo"><?= e(APP_NAME) ?></a>
 
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principal" aria-label="Ouvrir le menu">
             <span class="menu-icone" aria-hidden="true"><span></span><span></span><span></span></span>
@@ -39,33 +39,33 @@ function nav_class(string $page, string $active): string
 
         <nav id="menu-principal" class="nav">
             <ul class="nav-liens">
-                <li><a href="<?= BASE_URL ?>/index.php"<?= nav_class('accueil', $activePage) ?>><?= icone('accueil') ?><span>Accueil</span></a></li>
-                <li><a href="<?= BASE_URL ?>/prestations.php"<?= nav_class('prestations', $activePage) ?>><?= icone('soins') ?><span>Prestations</span></a></li>
-                <li><a href="<?= BASE_URL ?>/reserver.php"<?= nav_class('reserver', $activePage) ?>><?= icone('calendrier') ?><span>Réserver</span></a></li>
-                <li><a href="<?= BASE_URL ?>/galerie.php"<?= nav_class('galerie', $activePage) ?>><?= icone('galerie') ?><span>Galerie</span></a></li>
-                <li><a href="<?= BASE_URL ?>/contact.php"<?= nav_class('contact', $activePage) ?>><?= icone('contact') ?><span>Contact</span></a></li>
+                <li><a href="<?= BASE_URL ?>/"<?= nav_class('accueil', $activePage) ?>><?= icone('accueil') ?><span>Accueil</span></a></li>
+                <li><a href="<?= BASE_URL ?>/prestations"<?= nav_class('prestations', $activePage) ?>><?= icone('soins') ?><span>Prestations</span></a></li>
+                <li><a href="<?= BASE_URL ?>/reserver"<?= nav_class('reserver', $activePage) ?>><?= icone('calendrier') ?><span>Réserver</span></a></li>
+                <li><a href="<?= BASE_URL ?>/galerie"<?= nav_class('galerie', $activePage) ?>><?= icone('galerie') ?><span>Galerie</span></a></li>
+                <li><a href="<?= BASE_URL ?>/contact"<?= nav_class('contact', $activePage) ?>><?= icone('contact') ?><span>Contact</span></a></li>
                 <?php if ($user && $user['role'] === 'admin'): ?>
-                    <li><a href="<?= ADMIN_URL ?>/index.php"><?= icone('admin') ?><span>Admin</span></a></li>
+                    <li><a href="<?= ADMIN_URL ?>/"><?= icone('admin') ?><span>Admin</span></a></li>
                 <?php endif; ?>
             </ul>
 
             <ul class="nav-compte">
                 <?php if ($user): ?>
                     <li>
-                        <a href="<?= BASE_URL ?>/profile.php" class="avatar-lien<?= $activePage === 'compte' ? ' actif' : '' ?>" title="Mon compte">
+                        <a href="<?= BASE_URL ?>/profile" class="avatar-lien<?= $activePage === 'compte' ? ' actif' : '' ?>" title="Mon compte">
                             <span class="avatar" aria-hidden="true"><?= e(initiales($user)) ?></span>
                             <!--span class="avatar-texte">Mon compte · <?= e($user['prenom']) ?></span-->
                         </a>
                     </li>
                     <li>
-                        <form action="<?= BASE_URL ?>/deconnexion.php" method="post" class="form-inline">
+                        <form action="<?= BASE_URL ?>/deconnexion" method="post" class="form-inline">
                             <?= csrf_field() ?>
                             <button type="submit" class="btn-deconnexion" aria-label="Déconnexion"><?= icone('deconnexion', 16) ?><span>Déconnexion</span></button>
                         </form>
                     </li>
                 <?php else: ?>
-                    <li><a href="<?= BASE_URL ?>/connexion.php" class="lien-connexion<?= $activePage === 'connexion' ? ' actif' : '' ?>"><?= icone('connexion') ?><span>Connexion</span></a></li>
-                    <li><a href="<?= BASE_URL ?>/inscription.php" class="btn btn-petit btn-inscription"><?= icone('inscription', 16) ?><span>Créer un compte</span></a></li>
+                    <li><a href="<?= BASE_URL ?>/connexion" class="lien-connexion<?= $activePage === 'connexion' ? ' actif' : '' ?>"><?= icone('connexion') ?><span>Connexion</span></a></li>
+                    <li><a href="<?= BASE_URL ?>/inscription" class="btn btn-petit btn-inscription"><?= icone('inscription', 16) ?><span>Créer un compte</span></a></li>
                 <?php endif; ?>
             </ul>
         </nav>

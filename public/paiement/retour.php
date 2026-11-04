@@ -16,10 +16,10 @@ $reservationId = $stmt->fetchColumn();
 
 if ($transactionId === '' || !$reservationId) {
     flash('erreur', 'Paiement introuvable.');
-    redirect(BASE_URL . '/index.php');
+    redirect(BASE_URL . '/');
 }
 
-$urlRecap = BASE_URL . '/paiement/initier.php?reservation=' . (int) $reservationId;
+$urlRecap = BASE_URL . '/paiement/initier?reservation=' . (int) $reservationId;
 
 try {
     $transaction = fedapay_transaction($transactionId);

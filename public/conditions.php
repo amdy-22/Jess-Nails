@@ -42,7 +42,7 @@ require __DIR__ . '/../includes/header.php';
     <h2>7. Réclamations</h2>
     <p>Pour toute réclamation, écrivez à <a href="mailto:<?= e(email_contact()) ?>"><?= e(email_contact()) ?></a><?= SALON_TELEPHONE !== '' ? ' ou appelez le ' . e(SALON_TELEPHONE) : '' ?>. Nous recherchons une solution amiable avant tout recours. Ces conditions sont soumises au droit béninois.</p>
 
-    <p class="liens-legaux">Voir aussi : <a href="<?= BASE_URL ?>/mentions-legales.php">Mentions légales</a> · <a href="<?= BASE_URL ?>/confidentialite.php">Confidentialité</a></p>
+    <p class="liens-legaux">Voir aussi : <a href="<?= BASE_URL ?>/mentions-legales">Mentions légales</a> · <a href="<?= BASE_URL ?>/confidentialite">Confidentialité</a></p>
 </article>
 
 <?php require __DIR__ . '/../includes/footer.php';

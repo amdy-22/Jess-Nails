@@ -57,7 +57,7 @@ require __DIR__ . '/../includes/header.php';
     <h2>Sécurité</h2>
     <p>Connexion chiffrée (HTTPS), mots de passe chiffrés, accès à l'administration réservé à l'équipe, protection contre les tentatives de connexion répétées.</p>
 
-    <p class="liens-legaux">Voir aussi : <a href="<?= BASE_URL ?>/mentions-legales.php">Mentions légales</a> · <a href="<?= BASE_URL ?>/conditions.php">Conditions de réservation</a></p>
+    <p class="liens-legaux">Voir aussi : <a href="<?= BASE_URL ?>/mentions-legales">Mentions légales</a> · <a href="<?= BASE_URL ?>/conditions">Conditions de réservation</a></p>
 </article>
 
 <?php require __DIR__ . '/../includes/footer.php';

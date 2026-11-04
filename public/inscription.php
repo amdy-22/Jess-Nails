@@ -3,7 +3,7 @@ require_once __DIR__ . '/../includes/auth.php';
 
 // Déjà connecté : pas besoin de s'inscrire
 if (is_logged_in()) {
-    redirect_after_auth(BASE_URL . '/index.php');
+    redirect_after_auth(BASE_URL . '/');
 }
 
 /**
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($erreurs) {
         set_old($_POST);
         $_SESSION['erreurs'] = $erreurs;
-        redirect(BASE_URL . '/inscription.php');
+        redirect(BASE_URL . '/inscription');
     }
 
     $stmt = db()->prepare(
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     flash('succes', 'Bienvenue ' . $prenom . ', ton compte vient d\'être créé.');
 
     // Retour à la réservation en cours si le client venait de là
-    redirect_after_auth(BASE_URL . '/index.php');
+    redirect_after_auth(BASE_URL . '/');
 }
 
 $erreurs = $_SESSION['erreurs'] ?? [];
@@ -132,11 +132,11 @@ require __DIR__ . '/../includes/header.php';
                 <input type="password" id="mot_de_passe_confirmation" name="mot_de_passe_confirmation" minlength="8" autocomplete="new-password" required>
             </div>
         </div>
-        <p class="discret petit-texte">En créant ton compte, tu acceptes notre <a href="<?= BASE_URL ?>/confidentialite.php" target="_blank">politique de confidentialité</a>.</p>
+        <p class="discret petit-texte">En créant ton compte, tu acceptes notre <a href="<?= BASE_URL ?>/confidentialite" target="_blank">politique de confidentialité</a>.</p>
         <button type="submit" class="btn btn-plein">Créer mon compte</button>
     </form>
 
-    <p class="bas-formulaire">Déjà un compte ? <a href="<?= BASE_URL ?>/connexion.php">Se connecter</a></p>
+    <p class="bas-formulaire">Déjà un compte ? <a href="<?= BASE_URL ?>/connexion">Se connecter</a></p>
 </section>
 
 <?php

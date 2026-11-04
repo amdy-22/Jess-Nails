@@ -23,7 +23,7 @@ $resa = $stmt->fetch();
 if (!$resa || !deplacement_possible($resa)) {
     flash('erreur', 'Ce rendez-vous ne peut plus être déplacé en ligne (moins de ' . DELAI_ANNULATION_H
         . ' h avant, ou déjà annulé). Contacte directement l\'institut.');
-    redirect(BASE_URL . '/profile.php');
+    redirect(BASE_URL . '/profile');
 }
 
 $praticiennesActives = db()->query('SELECT id, nom FROM praticiennes WHERE actif = 1 ORDER BY nom')->fetchAll();
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $heure  = (string) ($_POST['heure'] ?? '');
     $pratId = (int) ($_POST['praticienne'] ?? 0);
     $pratId = in_array($pratId, $idsActives, true) ? $pratId : 0;
-    $retour = BASE_URL . '/deplacer.php?' . http_build_query(['reservation' => $id, 'date' => $_POST['date'] ?? '', 'praticienne' => $pratId]);
+    $retour = BASE_URL . '/deplacer?' . http_build_query(['reservation' => $id, 'date' => $_POST['date'] ?? '', 'praticienne' => $pratId]);
 
     if (!$jour || !preg_match('/^\d{2}:\d{2}$/', $heure)) {
         flash('erreur', 'Choisis une date et un horaire.');
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         error_log('[Emails] ' . $e->getMessage());
     }
     flash('succes', 'Rendez-vous déplacé au ' . format_date_fr(new DateTimeImmutable($jour->format('Y-m-d') . ' ' . $heure), true) . '.');
-    redirect(BASE_URL . '/profile.php');
+    redirect(BASE_URL . '/profile');
 }
 
 // Par défaut : la date et la praticienne actuelles
@@ -71,7 +71,7 @@ require __DIR__ . '/../includes/header.php';
 ?>
 
 <section class="entete-page">
-    <p><a href="<?= BASE_URL ?>/profile.php">← Mon compte</a></p>
+    <p><a href="<?= BASE_URL ?>/profile">← Mon compte</a></p>
     <h1>Déplacer mon rendez-vous</h1>
 </section>
 

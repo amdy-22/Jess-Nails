@@ -161,9 +161,9 @@ function gabarit_email(string $titre, string $contenu, ?string $apercu = null): 
           <p style="margin:0 0 8px;font-family:{$serif};font-size:15px;color:{$texte};">{$nom}</p>
           {$coordonnees}
           <p style="margin:0 0 8px;">
-            <a href="{$site}/profile.php" style="color:{$discret};">Mon compte</a> &nbsp;·&nbsp;
-            <a href="{$site}/conditions.php" style="color:{$discret};">Conditions</a> &nbsp;·&nbsp;
-            <a href="{$site}/confidentialite.php" style="color:{$discret};">Confidentialité</a>
+            <a href="{$site}/profile" style="color:{$discret};">Mon compte</a> &nbsp;·&nbsp;
+            <a href="{$site}/conditions" style="color:{$discret};">Conditions</a> &nbsp;·&nbsp;
+            <a href="{$site}/confidentialite" style="color:{$discret};">Confidentialité</a>
           </p>
           <p style="margin:0;color:#a3949f;">Message automatique lié à ton rendez-vous. Tu peux y répondre directement.<br>&copy; {$annee} {$nom}</p>
         </td></tr>
