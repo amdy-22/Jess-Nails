@@ -52,21 +52,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'INSERT INTO messages_contact (utilisateur_id, nom, email, telephone, sujet, message, ip) VALUES (?, ?, ?, ?, ?, ?, ?)'
             )->execute([$user['id'] ?? null, $nom, $email !== '' ? $email : null, trim($telephone) !== '' ? trim($telephone) : null, $sujet, $message, $ip]);
 
-            // Copie par email à l'institut (on peut répondre directement à la cliente)
+            // Email à l'admin : adresse de notification (config.php), sinon tous les comptes administrateurs
+            $destinataires = [];
             if (ADMIN_NOTIFICATION_EMAIL !== '') {
+                $destinataires[] = ['email' => ADMIN_NOTIFICATION_EMAIL];
+            } else {
+                $admins = db()->query("SELECT email, prenom FROM utilisateurs WHERE role = 'admin' AND email IS NOT NULL")->fetchAll();
+                foreach ($admins as $a) {
+                    $destinataires[] = ['email' => $a['email'], 'name' => $a['prenom']];
+                }
+            }
+            if ($destinataires) {
                 $lignes = ['De' => e($nom), 'Sujet' => e(SUJETS_CONTACT[$sujet])];
                 if ($email !== '')           { $lignes['Email'] = '<a href="mailto:' . e($email) . '">' . e($email) . '</a>'; }
                 if (trim($telephone) !== '') { $lignes['Téléphone'] = e($telephone); }
                 envoyer_email(
-                    [['email' => ADMIN_NOTIFICATION_EMAIL]],
-                    'Message de ' . $nom . ' : ' . SUJETS_CONTACT[$sujet],
+                    $destinataires,
+                    'Nouveau message de ' . $nom . ' : ' . SUJETS_CONTACT[$sujet],
                     gabarit_email('Nouveau message du site',
-                        tableau_email($lignes)
+                        '<p>Un message vient d\'arriver depuis la page Contact. Il est aussi enregistré dans <strong>Admin → Messages</strong>.</p>'
+                        . tableau_email($lignes)
                         . '<p style="white-space:pre-line;background:#faf6f8;border-left:3px solid #8c3a5b;padding:12px 16px;border-radius:6px;">' . e($message) . '</p>'
-                        . bouton_email('Voir dans l\'admin', ADMIN_URL . '/messages'),
+                        . bouton_email('Ouvrir les messages', ADMIN_URL . '/messages?filtre=non-lus'),
                         'Message de ' . $nom),
-                    $email !== '' ? ['email' => $email, 'name' => $nom] : null
+                    $email !== '' ? ['email' => $email, 'name' => $nom] : null   // « Répondre » écrit à la cliente
                 );
+            } else {
+                error_log('[Contact] Aucun destinataire : renseigne ADMIN_NOTIFICATION_EMAIL dans config.php.');
             }
         }
         clear_old();

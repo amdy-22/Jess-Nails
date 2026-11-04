@@ -64,7 +64,7 @@ function nav_class(string $page, string $active): string
                         </form>
                     </li>
                 <?php else: ?>
-                    <li><a href="<?= BASE_URL ?>/connexion" class="lien-connexion<?= $activePage === 'connexion' ? ' actif' : '' ?>"><?= icone('connexion') ?><span>Connexion</span></a></li>
+                    <li><a href="<?= BASE_URL ?>/connexion" class="lien-connexion<?= $activePage === 'connexion' ? ' actif' : '' ?>"><?= icone('connexion', 16) ?><span>Connexion</span></a></li>
                     <li><a href="<?= BASE_URL ?>/inscription" class="btn btn-petit btn-inscription"><?= icone('inscription', 16) ?><span>Créer un compte</span></a></li>
                 <?php endif; ?>
             </ul>

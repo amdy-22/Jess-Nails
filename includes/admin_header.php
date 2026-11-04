@@ -60,7 +60,10 @@ try {
             <ul class="nav-compte">
                 <li class="voir-site"><a href="<?= BASE_URL ?>/" target="_blank" rel="noopener" title="Voir le site"><?= icone('site') ?><span>Voir le site</span></a></li>
                 <li>
-                    <span class="avatar" title="<?= e($admin['prenom'] . ' ' . $admin['nom']) ?>"><?= e(initiales($admin)) ?></span>
+                    <a href="<?= ADMIN_URL ?>/profil" class="avatar-lien<?= $activeAdmin === 'profil' ? ' actif' : '' ?>" title="Mon profil">
+                        <span class="avatar" aria-hidden="true"><?= e(initiales($admin)) ?></span>
+                        <span class="avatar-texte">Mon profil · <?= e($admin['prenom']) ?></span>
+                    </a>
                 </li>
                 <li>
                     <form action="<?= BASE_URL ?>/deconnexion" method="post" class="form-inline">

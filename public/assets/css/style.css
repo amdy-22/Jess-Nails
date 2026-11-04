@@ -1345,3 +1345,26 @@ body.sans-defilement .whatsapp-flottant { display: none; }
 @media (max-width: 600px) {
     .carte-suggestion button[type=submit] { align-self: stretch; }
 }
+
+/* ---------- Admin : mon profil (étape 27) ---------- */
+.admin .avatar-lien { display: inline-flex; align-items: center; gap: 10px; color: #e9dfe6; text-decoration: none; }
+.admin .avatar-lien:hover .avatar, .admin .avatar-lien.actif .avatar { box-shadow: 0 0 0 2px var(--encre), 0 0 0 3.5px #fff; }
+.profil-carte {
+    display: flex; align-items: center; gap: 20px; margin-bottom: 26px; padding: 22px 24px;
+    background: var(--surface); border: 1px solid var(--ligne); border-radius: var(--rayon); max-width: 1100px;
+}
+.profil-carte h1 { margin: 0 0 4px; font-size: 1.7rem; }
+.profil-carte p { margin: 0; line-height: 1.6; }
+.avatar-grand, .admin .avatar-grand { width: 72px; height: 72px; font-size: 1.5rem; box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--accent-doux); }
+.admin .nav .avatar-lien, .admin .nav .avatar-lien.actif { text-decoration: none; }
+.profil-grille { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; max-width: 1100px; }
+.profil-grille .resa-bloc { display: flex; flex-direction: column; gap: 16px; }
+.profil-grille .resa-bloc h2 { margin: 0; }
+.profil-grille .resa-bloc button[type=submit] { align-self: flex-start; }
+.notif-adresse { font-weight: 700; font-size: 1.05rem; color: var(--accent-fonce); overflow-wrap: anywhere; }
+@media (max-width: 760px) {
+    .profil-grille { grid-template-columns: minmax(0, 1fr); }
+    .profil-carte { padding: 18px; gap: 14px; }
+    .avatar-grand, .admin .avatar-grand { width: 56px; height: 56px; font-size: 1.2rem; }
+    .admin .avatar-lien { width: 100%; padding: 8px 4px; font-weight: 600; color: #fff; }
+}
