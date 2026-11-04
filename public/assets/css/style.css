@@ -1180,3 +1180,139 @@ input, select, textarea {
     .admin .nav-compte li:last-child { flex: 1; }
     .admin .btn-deconnexion { width: 100%; justify-content: center; padding: 12px; font-size: .95rem; border-radius: 999px; background: var(--accent); color: #fff; }
 }
+
+/* =========================================================
+   Admin galerie : cartes photo (étape 24, bloc complet)
+   ========================================================= */
+.galerie-admin { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+.photo-admin {
+    display: flex; flex-direction: column; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--ligne); border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(43, 29, 42, .05);
+}
+.photo-admin-image { position: relative; display: block; flex: none; aspect-ratio: 4 / 3; min-height: 0; overflow: hidden; background: var(--accent-doux); }
+.photo-admin-image img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-admin-image .badge { position: absolute; top: 10px; left: 10px; z-index: 1; }
+.photo-masquee .photo-admin-image img { opacity: .4; filter: grayscale(.4); }
+
+.photo-admin-form { display: flex; flex-direction: column; gap: 8px; padding: 14px 14px 0; margin: 0; }
+.photo-admin-form input[type="text"],
+.photo-admin-form select {
+    width: 100%; padding: 9px 12px; border: 1.5px solid var(--ligne); border-radius: 8px;
+    background: var(--fond); color: var(--encre); font: 500 16px/1.3 var(--police-texte);
+}
+.photo-admin-form select {
+    -webkit-appearance: none; appearance: none; padding-right: 34px; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%236e5f6c' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center;
+}
+.photo-admin-form input:focus, .photo-admin-form select:focus { border-color: var(--accent); background-color: var(--surface); outline: none; }
+.photo-admin-form button {
+    align-self: stretch; padding: 9px 12px; border: 0; border-radius: 8px; cursor: pointer;
+    background: var(--accent); color: #fff; font: 600 .88rem var(--police-texte);
+}
+.photo-admin-form button:hover { background: var(--accent-fonce); }
+
+.photo-admin-actions {
+    display: flex; align-items: center; gap: 6px; flex-wrap: nowrap;
+    margin-top: 12px; padding: 10px 14px 14px; border-top: 1px solid var(--ligne);
+}
+.photo-admin-actions form { margin: 0; display: contents; }
+.photo-admin-actions button {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 34px;
+    padding: 6px 10px; border: 1px solid var(--ligne); border-radius: 8px; background: var(--surface);
+    color: var(--encre); font: 600 .8rem var(--police-texte); white-space: nowrap; cursor: pointer; transition: border-color .15s, color .15s, background .15s;
+}
+.photo-admin-actions button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.photo-admin-actions button[aria-label="Monter"],
+.photo-admin-actions button[aria-label="Descendre"] { width: 34px; padding: 0; font-size: 1rem; }
+.photo-admin-actions button:disabled { opacity: .35; cursor: default; }
+.photo-admin-actions .btn-action-danger { margin-left: auto; color: var(--erreur); }
+.photo-admin-actions .btn-action-danger:hover { border-color: var(--erreur) !important; color: #fff !important; background: var(--erreur); }
+
+/* ---------- Galerie photos (étape 17) ---------- */
+.pastille-active { background: var(--accent); color: #fff; }
+.galerie { columns: 3 260px; column-gap: 14px; }
+.galerie-item {
+    position: relative; display: block; margin: 0 0 14px; break-inside: avoid;
+    border-radius: var(--rayon); overflow: hidden; background: var(--accent-doux);
+}
+.galerie-item img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
+.galerie-item:hover img, .galerie-item:focus-visible img { transform: scale(1.03); }
+.galerie-legende {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 12px 10px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, .6)); color: #fff; font-size: .85rem;
+}
+.galerie-cta { text-align: center; margin: 28px 0 0; }
+.visionneuse {
+    position: fixed; inset: 0; z-index: 100; background: rgba(20, 12, 18, .94);
+    display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+.visionneuse[hidden] { display: none; }
+.visionneuse figure { margin: 0; max-width: 100%; max-height: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.visionneuse img { max-width: min(92vw, 1600px); max-height: 82vh; object-fit: contain; border-radius: 6px; }
+.visionneuse figcaption { color: #fff; font-size: .95rem; text-align: center; }
+.visionneuse button {
+    position: absolute; background: rgba(255, 255, 255, .12); color: #fff; border: 0;
+    width: 48px; height: 48px; border-radius: 50%; font-size: 2rem; line-height: 1; cursor: pointer;
+}
+.visionneuse button:hover, .visionneuse button:focus-visible { background: rgba(255, 255, 255, .25); }
+.visionneuse-fermer { top: 14px; right: 14px; }
+.visionneuse-prec { left: 14px; top: 50%; transform: translateY(-50%); }
+.visionneuse-suiv { right: 14px; top: 50%; transform: translateY(-50%); }
+body.sans-defilement { overflow: hidden; }
+body.sans-defilement .whatsapp-flottant { display: none; }
+@media (max-width: 600px) {
+    .galerie { columns: 2 140px; column-gap: 8px; }
+    .galerie-item { margin-bottom: 8px; }
+    .visionneuse-prec, .visionneuse-suiv { top: auto; bottom: 18px; transform: none; }
+    .visionneuse-prec { left: calc(50% - 60px); }
+    .visionneuse-suiv { right: calc(50% - 60px); }
+}
+.accueil-galerie { margin-top: 48px; }
+.accueil-galerie-entete { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.accueil-galerie-entete h2 { margin: 0; }
+
+/* ---------- Carrousel de l'accueil (étape 18) ---------- */
+.carrousel { position: relative; }
+.carrousel-piste {
+    display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory;
+    scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; padding-bottom: 4px; border-radius: var(--rayon);
+}
+.carrousel-piste::-webkit-scrollbar { display: none; }
+.carrousel-piste:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.carrousel-slide {
+    position: relative; flex: 0 0 calc((100% - 28px) / 3); height: 340px;
+    scroll-snap-align: start; border-radius: var(--rayon); overflow: hidden; background: var(--accent-doux);
+}
+.carrousel-slide img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
+.carrousel-slide:hover img { transform: scale(1.04); }
+.carrousel-btn {
+    position: absolute; top: 170px; transform: translateY(-50%); z-index: 2;
+    width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
+    background: rgba(255, 255, 255, .92); color: var(--accent-fonce); font-size: 1.8rem; line-height: 1;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .15);
+}
+.carrousel-btn:hover, .carrousel-btn:focus-visible { background: #fff; color: var(--accent); }
+.carrousel-prec { left: -10px; }
+.carrousel-suiv { right: -10px; }
+.carrousel-points { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.carrousel-point {
+    width: 9px; height: 9px; padding: 0; border-radius: 999px; border: 0; cursor: pointer;
+    background: var(--ligne); transition: width .25s ease, background .25s ease;
+}
+.carrousel-point[aria-current="true"] { width: 24px; background: var(--accent); }
+@media (max-width: 900px) {
+    .carrousel-slide { flex-basis: calc((100% - 14px) / 2); height: 300px; }
+    .carrousel-btn { top: 150px; }
+}
+@media (max-width: 600px) {
+    .carrousel-piste { gap: 10px; }
+    .carrousel-slide { flex-basis: 82%; height: 260px; }
+    .carrousel-btn { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .carrousel-piste { scroll-behavior: auto; }
+    .carrousel-slide img, .carrousel-point { transition: none; }
+}
