@@ -1142,3 +1142,41 @@ input, select, textarea {
     .grille-praticiennes { grid-template-columns: minmax(0, 1fr); }
     .grille-praticiennes > :last-child { max-width: 460px; }
 }
+
+/* =========================================================
+   En-tête admin avec icônes (étape 23)
+   ========================================================= */
+.admin .nav-liens a, .admin .voir-site a { display: inline-flex; align-items: center; gap: 7px; }
+.admin .nav .icone-trait { color: #a99aa6; flex: none; transition: color .15s; }
+.admin .nav a:hover .icone-trait, .admin .nav a.actif .icone-trait { color: #fff; }
+.admin .nav-compte { gap: 14px; align-items: center; }
+.admin .avatar { box-shadow: 0 0 0 2px var(--encre), 0 0 0 3.5px rgba(255, 255, 255, .25); width: 34px; height: 34px; }
+.admin .btn-deconnexion { padding: 7px 12px; font-size: .85rem; }
+
+.admin .logo { white-space: nowrap; flex: none; }
+@media (min-width: 1401px) and (max-width: 1700px) {
+    .admin .nav { gap: 18px; }
+    .admin .nav ul { gap: 16px; }
+    .admin .nav a, .admin .lien-bouton { font-size: .88rem; }
+}
+
+@media (min-width: 761px) and (max-width: 1400px) {
+    .admin .nav-liens .icone-trait { display: none; }
+}
+@media (min-width: 761px) and (max-width: 1100px) {
+    .admin .voir-site span, .admin .btn-deconnexion span { display: none; }
+    .admin .btn-deconnexion { padding: 7px 9px; }
+    .admin .avatar { display: none; }
+}
+
+@media (max-width: 760px) {
+    .admin .nav-liens a { display: flex; justify-content: flex-start; gap: 14px; }
+    .admin .nav-liens a::after { margin-left: auto; }
+    .admin .nav-liens .icone-trait { width: 21px; height: 21px; }
+    .admin .nav-compte { flex-direction: row !important; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+    .admin .nav-compte li { width: auto !important; }
+    .admin .voir-site { flex: 1 1 100%; }
+    .admin .voir-site a { padding: 12px 4px; }
+    .admin .nav-compte li:last-child { flex: 1; }
+    .admin .btn-deconnexion { width: 100%; justify-content: center; padding: 12px; font-size: .95rem; border-radius: 999px; background: var(--accent); color: #fff; }
+}

@@ -14,9 +14,15 @@ function icone(string $nom, int $taille = 18): string
         'admin'       => '<path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.3 7.5 9.5 4.3-1.2 7.5-4.9 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/>',
         'connexion'   => '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/>',
         'inscription' => '<circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 3.6-7 8-7 1.3 0 2.5.3 3.6.7"/><path d="M19 14v6M16 17h6"/>',
+        'tableau'     => '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
+        'praticiennes'=> '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14c2.2.6 3.5 2.8 3.5 6"/>',
+        'horaires'    => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+        'messages'    => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/>',
+        'site'        => '<path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
         'deconnexion' => '<path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"/><path d="M16 17l5-5-5-5M21 12H9"/>',
     ];
-    $trace = $traces[$nom] ?? '';
+    $alias = ['reservations' => 'calendrier', 'prestations' => 'soins'];   // noms des pages admin
+    $trace = $traces[$alias[$nom] ?? $nom] ?? '';
     return '<svg class="icone-trait" width="' . $taille . '" height="' . $taille . '" viewBox="0 0 24 24" fill="none" '
         . 'stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'
         . $trace . '</svg>';

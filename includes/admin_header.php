@@ -2,17 +2,19 @@
 /**
  * En-tête de l'espace admin. Avant de l'inclure, une page peut définir :
  *   $pageTitle   : titre de l'onglet
- *   $activeAdmin : 'tableau', 'reservations', 'prestations', 'praticiennes', 'horaires'
+ *   $activeAdmin : 'tableau', 'reservations', 'prestations', 'galerie', 'messages', 'praticiennes', 'horaires'
  */
 $pageTitle   = $pageTitle   ?? 'Administration';
 $activeAdmin = $activeAdmin ?? '';
 $admin       = current_user();
+require_once __DIR__ . '/icones.php';
 
 function admin_lien(string $page, string $fichier, string $libelle, string $actif, int $compteur = 0): string
 {
     $classe = $page === $actif ? ' class="actif" aria-current="page"' : '';
     $pastille = $compteur > 0 ? ' <span class="compteur-nav" aria-label="' . $compteur . ' non lus">' . $compteur . '</span>' : '';
-    return '<li><a href="' . ADMIN_URL . '/' . $fichier . '"' . $classe . '>' . e($libelle) . $pastille . '</a></li>';
+    return '<li><a href="' . ADMIN_URL . '/' . $fichier . '"' . $classe . '>'
+        . icone($page) . '<span>' . e($libelle) . '</span>' . $pastille . '</a></li>';
 }
 
 // Messages de contact non lus (0 si la table n'existe pas encore)
@@ -56,11 +58,14 @@ try {
                 <?= admin_lien('horaires', 'horaires', 'Horaires', $activeAdmin) ?>
             </ul>
             <ul class="nav-compte">
-                <li class="voir-site"><a href="<?= BASE_URL ?>/">Voir le site</a></li>
+                <li class="voir-site"><a href="<?= BASE_URL ?>/" target="_blank" rel="noopener" title="Voir le site"><?= icone('site') ?><span>Voir le site</span></a></li>
+                <li>
+                    <span class="avatar" title="<?= e($admin['prenom'] . ' ' . $admin['nom']) ?>"><?= e(initiales($admin)) ?></span>
+                </li>
                 <li>
                     <form action="<?= BASE_URL ?>/deconnexion" method="post" class="form-inline">
                         <?= csrf_field() ?>
-                        <button type="submit" class="lien-bouton">Déconnexion (<?= e($admin['prenom']) ?>)</button>
+                        <button type="submit" class="btn-deconnexion" aria-label="Déconnexion"><?= icone('deconnexion', 16) ?><span>Déconnexion</span></button>
                     </form>
                 </li>
             </ul>
