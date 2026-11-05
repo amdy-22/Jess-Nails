@@ -9,6 +9,11 @@ if (is_logged_in()) {
 const MAX_ESSAIS     = 5;
 const DUREE_BLOCAGE  = 300;
 
+// Limite enregistrée en base (le visiteur ne peut pas la contourner en vidant ses cookies)
+const LIMITE_FENETRE      = 900;   // 15 minutes
+const LIMITE_PAR_EMAIL    = 8;     // échecs sur un même compte, d'où qu'ils viennent
+const LIMITE_PAR_IP       = 20;    // échecs depuis une même connexion (large : plusieurs clientes peuvent partager une IP mobile)
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
 
@@ -19,9 +24,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $email = $_POST['email'] ?? '';
+
+    if (limite_atteinte('connexion_ip', ip_client(), LIMITE_PAR_IP, LIMITE_FENETRE)
+        || limite_atteinte('connexion_email', $email, LIMITE_PAR_EMAIL, LIMITE_FENETRE)) {
+        $_SESSION['erreur_connexion'] = 'Trop de tentatives. Réessaie dans 15 minutes ou utilise « Mot de passe oublié ».';
+        redirect(BASE_URL . '/connexion');
+    }
+
     $user  = attempt_login($email, $_POST['mot_de_passe'] ?? '');
 
     if (!$user) {
+        limite_noter('connexion_ip', ip_client());
+        limite_noter('connexion_email', $email);
         $_SESSION['essais'] = ($_SESSION['essais'] ?? 0) + 1;
         if ($_SESSION['essais'] >= MAX_ESSAIS) {
             $_SESSION['bloque_jusqua'] = time() + DUREE_BLOCAGE;
@@ -33,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     unset($_SESSION['essais'], $_SESSION['bloque_jusqua']);
+    limite_effacer('connexion_email', $email);
     clear_old();
     login_user($user);
     flash('succes', 'Bonjour ' . $user['prenom'] . ' !');

@@ -46,7 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (mb_strlen($message) < 10)               { $erreurs[] = 'Ta suggestion est un peu courte (10 caractères minimum).'; }
     if (mb_strlen($message) > 2000)             { $erreurs[] = 'Ta suggestion est trop longue (2 000 caractères maximum).'; }
     if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) { $erreurs[] = 'L\'email n\'est pas valide (tu peux le laisser vide).'; }
-    if (count($_SESSION['suggestions_envoyees']) >= SUGGESTIONS_MAX_PAR_HEURE) {
+    if (count($_SESSION['suggestions_envoyees']) >= SUGGESTIONS_MAX_PAR_HEURE
+        || limite_atteinte('suggestion_ip', ip_client(), 10, 3600)) {
         $erreurs[] = 'Merci pour toutes ces idées ! Tu pourras en envoyer d\'autres dans un moment.';
     }
 
@@ -80,6 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 );
             }
             $_SESSION['suggestions_envoyees'][] = time();
+            limite_noter('suggestion_ip', ip_client());
         }
         clear_old();
         unset($_SESSION['suggestion_affiche']);

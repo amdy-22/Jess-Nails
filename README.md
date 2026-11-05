@@ -27,3 +27,22 @@ Prérequis : PHP 8.1+, extensions `pdo_mysql` et `curl`, Apache avec `.htaccess`
 
 - `config/config.php` contient les mots de passe et clés : il est ignoré par Git, ne jamais le forcer dans un commit.
 - Les dossiers `config/`, `includes/`, `sql/` et `logs/` sont fermés au web par leurs `.htaccess`.
+
+## Sauvegardes
+
+`taches/sauvegarde.php` fait un dump compressé de la base (et des photos le dimanche).
+Tâche planifiée AlwaysData, tous les jours : `php $HOME/www/jess-nails/taches/sauvegarde.php`
+Fichiers dans `$HOME/sauvegardes-beauty/` (14 jours + le 1er de chaque mois pendant 6 mois).
+Lister : `php taches/sauvegarde.php --liste`
+
+Restaurer (écrase les données actuelles) :
+
+```
+gzip -dc base_AAAA-MM-JJ_HH-MM.sql.gz | mysql --default-character-set=utf8mb4 -h HOTE -u UTILISATEUR -p NOM_BASE
+```
+
+## Protection contre les abus
+
+Les tentatives de connexion, d'inscription, de mot de passe oublié et de suggestion sont comptées
+en base (`limites_requetes`, migration `sql/etape23_limites.sql`). Réglages dans `public/connexion.php`
+(constantes `LIMITE_*`) et dans les autres pages.

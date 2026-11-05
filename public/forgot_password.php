@@ -12,7 +12,7 @@ const REINIT_DELAI_MIN    = 2;    // pas plus d'un email toutes les 2 min pour u
 const REINIT_MAX_SESSION  = 5;    // 5 demandes max par session et par quart d'heure
 
 if (is_logged_in()) {
-    redirect(BASE_URL . '/profile#profil');
+    redirect(BASE_URL . '/mon-compte#profil');
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -27,6 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $demandes[] = time();
     $_SESSION['demandes_reinit'] = $demandes;
+
+    // Limite en base : 10 demandes par heure et par connexion internet
+    if (limite_atteinte('reinit_ip', ip_client(), 10, 3600)) {
+        flash('erreur', 'Trop de demandes. Réessaie dans un moment.');
+        redirect(BASE_URL . '/forgot_password');
+    }
+    limite_noter('reinit_ip', ip_client());
 
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $stmt = db()->prepare('SELECT id, prenom, email FROM utilisateurs WHERE email = ?');

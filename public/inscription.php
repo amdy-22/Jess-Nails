@@ -27,7 +27,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mdp       = $_POST['mot_de_passe'] ?? '';
     $mdp2      = $_POST['mot_de_passe_confirmation'] ?? '';
 
+    // Pièges à robots : champ caché rempli, formulaire envoyé en moins de 3 secondes, ou trop de comptes depuis la même IP
+    $robot = trim($_POST['site_web'] ?? '') !== ''
+          || (time() - (int) ($_SESSION['inscription_affiche'] ?? 0)) < 3;
+
     $erreurs = [];
+    if ($robot) {
+        $erreurs[] = 'Le formulaire a été envoyé trop vite. Réessaie dans quelques secondes.';
+    } elseif (limite_atteinte('inscription_ip', ip_client(), 10, 3600)) {
+        $erreurs[] = 'Trop de comptes créés depuis cette connexion. Réessaie plus tard ou contacte l\'institut.';
+    }
     if ($prenom === '' || $nom === '') {
         $erreurs[] = 'Indique ton prénom et ton nom.';
     }
@@ -35,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erreurs[] = 'L\'adresse email n\'est pas valide.';
     }
     if ($telephone === null) {
-        $erreurs[] = 'Le numéro doit compter 10 chiffres et commencer par 01 (ex. 0197123456).';
+        $erreurs[] = 'Le numéro doit compter 10 chiffres et commencer par 01 (ex. 01 97 12 34 56).';
     }
     if (strlen($mdp) < 8) {
         $erreurs[] = 'Le mot de passe doit faire au moins 8 caractères.';
@@ -48,6 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $existe->execute([$email]);
         $compte = $existe->fetch();
         if ($compte && empty($compte['mot_de_passe'])) {
+            // Compte ouvert par l'institut (réservation par téléphone) : la cliente doit prouver
+            // que l'email est le sien en passant par "Mot de passe oublié"
             $erreurs[] = 'L\'institut a déjà créé un compte avec cet email. Clique sur « Mot de passe oublié » '
                        . 'depuis la page de connexion pour choisir ton mot de passe.';
         } elseif ($compte) {
@@ -67,14 +78,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     );
     $stmt->execute([$nom, $prenom, $email, $telephone, password_hash($mdp, PASSWORD_DEFAULT)]);
 
+    limite_noter('inscription_ip', ip_client());
+    unset($_SESSION['inscription_affiche']);
     clear_old();
     login_user(['id' => db()->lastInsertId(), 'role' => 'client']);
-    flash('succes', 'Bienvenue ' . $prenom . ', ton compte vient d\'être créé.');
+    flash('succes', 'Bienvenue ' . $prenom . ', ton compte est créé.');
 
     // Retour à la réservation en cours si le client venait de là
     redirect_after_auth(BASE_URL . '/');
 }
 
+$_SESSION['inscription_affiche'] = time();
 $erreurs = $_SESSION['erreurs'] ?? [];
 unset($_SESSION['erreurs']);
 
@@ -99,6 +113,10 @@ require __DIR__ . '/../includes/header.php';
 
     <form method="post" novalidate>
         <?= csrf_field() ?>
+        <div class="champ-piege" aria-hidden="true">
+            <label for="i-site">Ne pas remplir</label>
+            <input type="text" id="i-site" name="site_web" tabindex="-1" autocomplete="off">
+        </div>
 
         <div class="ligne-2">
             <div class="champ">
@@ -117,9 +135,9 @@ require __DIR__ . '/../includes/header.php';
         </div>
 
         <div class="champ">
-            <label for="telephone">Téléphone (WhatsApp)</label>
+            <label for="telephone">Téléphone (Mobile Money)</label>
             <input type="tel" id="telephone" name="telephone" value="<?= old('telephone') ?>"
-                   placeholder="0197123456" autocomplete="tel" required>
+                   placeholder="01 97 12 34 56" autocomplete="tel" required>
         </div>
 
         <div class="ligne-2">
@@ -132,7 +150,9 @@ require __DIR__ . '/../includes/header.php';
                 <input type="password" id="mot_de_passe_confirmation" name="mot_de_passe_confirmation" minlength="8" autocomplete="new-password" required>
             </div>
         </div>
+
         <p class="discret petit-texte">En créant ton compte, tu acceptes notre <a href="<?= BASE_URL ?>/confidentialite" target="_blank">politique de confidentialité</a>.</p>
+
         <button type="submit" class="btn btn-plein">Créer mon compte</button>
     </form>
 

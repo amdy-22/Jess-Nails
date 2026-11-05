@@ -7,6 +7,7 @@
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/limites.php';
 
 // ---------- Session sécurisée ----------
 if (session_status() === PHP_SESSION_NONE) {
@@ -32,6 +33,8 @@ function attempt_login(string $email, string $motDePasse): ?array
     $stmt->execute([mb_strtolower(trim($email))]);
     $user = $stmt->fetch();
 
+    // Compte créé par l'institut sans mot de passe : connexion impossible
+    // tant que la cliente n'a pas choisi son mot de passe (via "Mot de passe oublié")
     if (!$user || empty($user['mot_de_passe']) || !password_verify($motDePasse, $user['mot_de_passe'])) {
         return null;
     }
@@ -125,6 +128,20 @@ function require_admin(): void
     require_login();
     if (!is_admin()) {
         http_response_code(403);
-        die('Accès réservé à l\'administration.');
+        $pageTitle = 'Accès refusé';
+        require __DIR__ . '/header.php';
+        ?>
+        <section class="carte-formulaire">
+            <h1>Accès réservé à l'administration</h1>
+            <p>Tu es connecté avec le compte <strong><?= e(current_user()['email']) ?></strong>, qui n'est pas un compte administrateur.</p>
+            <form action="<?= BASE_URL ?>/deconnexion" method="post">
+                <?= csrf_field() ?>
+                <button type="submit" class="btn btn-plein btn-large">Me connecter avec un autre compte</button>
+            </form>
+            <p class="bas-formulaire"><a href="<?= BASE_URL ?>/">Retour au site</a></p>
+        </section>
+        <?php
+        require __DIR__ . '/footer.php';
+        exit;
     }
 }

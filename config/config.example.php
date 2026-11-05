@@ -10,7 +10,7 @@
  */
 
 // ---------- Application ----------
-define('APP_NAME', 'Jess Nails');
+define('APP_NAME', 'Beauty');
 define('APP_ENV', 'dev');                 // 'dev' en local, 'prod' en ligne (cache les erreurs, cookie HTTPS)
 date_default_timezone_set('Africa/Porto-Novo');
 
@@ -40,7 +40,7 @@ define('FEDAPAY_API_BASE', '');             // laisser vide (sert uniquement aux
 // Laisse vide en local : les emails seront enregistrés dans le dossier logs/emails/
 define('BREVO_API_KEY', '');
 define('BREVO_API_BASE', '');                  // laisser vide (sert uniquement aux tests)
-define('MAIL_FROM_EMAIL', 'jessicabakary048@gmail.com');  // expéditeur validé dans Brevo (à changer)
+define('MAIL_FROM_EMAIL', 'reservations@exemple.com');  // expéditeur validé dans Brevo (à changer)
 define('MAIL_FROM_NAME', APP_NAME);
 define('ADMIN_NOTIFICATION_EMAIL', '');       // vide = tous les comptes admin reçoivent l'email
 
@@ -59,4 +59,9 @@ if (APP_ENV === 'dev') {
     ini_set('error_log', __DIR__ . '/../logs/php-errors.log');
 }
 
-define('DEVELOPPEUR_EMAIL', 'alexamdy22@gmail.com');
+// Boîte à suggestions (pied de page) : adresse du développeur qui reçoit les suggestions
+define('DEVELOPPEUR_EMAIL', '');
+
+// Dossier des sauvegardes automatiques (taches/sauvegarde.php). Laisser vide = $HOME/sauvegardes-beauty
+// sur le serveur, donc hors du site. Ne jamais pointer vers un dossier accessible par internet.
+define('BACKUP_DIR', '');
