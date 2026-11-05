@@ -18,7 +18,7 @@
  * Conservation : les 14 dernières sauvegardes de la base, plus celle du 1er de chaque mois
  * pendant 6 mois. Photos : les 4 dernières archives.
  *
- * En cas d'échec, un email part vers ADMIN_NOTIFICATION_EMAIL (ou les comptes admin) et le
+ * En cas d'échec, un email part vers DEVELOPPEUR_EMAIL (config.php) et le
  * script se termine avec un code d'erreur (AlwaysData l'affiche dans l'historique de la tâche).
  */
 
@@ -178,37 +178,21 @@ function faire_tourner(string $dossier): int
 }
 
 // ---------- Alerte par email ----------
+// L'alerte est technique : elle part uniquement vers le développeur (DEVELOPPEUR_EMAIL dans config.php),
+// pas vers l'institut.
 function alerter(string $probleme): void
 {
-    $destinataires = [];
-    if (ADMIN_NOTIFICATION_EMAIL !== '') {
-        $destinataires[] = ['email' => ADMIN_NOTIFICATION_EMAIL];
-    } else {
-        // Connexion à part (sans db()) : db() arrête le script si la base est injoignable, or c'est justement un cas d'alerte
-        try {
-            $pdo = new PDO(sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', DB_HOST, DB_PORT, DB_NAME), DB_USER, DB_PASS,
-                [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 5]);
-            foreach ($pdo->query("SELECT email, prenom FROM utilisateurs WHERE role = 'admin' AND email IS NOT NULL")->fetchAll(PDO::FETCH_ASSOC) as $a) {
-                $destinataires[] = ['email' => $a['email'], 'name' => $a['prenom']];
-            }
-        } catch (Throwable $e) {
-            // base injoignable : il ne reste que le développeur
-        }
-    }
-    if (defined('DEVELOPPEUR_EMAIL') && DEVELOPPEUR_EMAIL !== '') {
-        $destinataires[] = ['email' => DEVELOPPEUR_EMAIL];
-    }
-    if (!$destinataires) {
-        journal('Aucune adresse pour envoyer l\'alerte (renseigne ADMIN_NOTIFICATION_EMAIL dans config.php).');
+    if (!defined('DEVELOPPEUR_EMAIL') || DEVELOPPEUR_EMAIL === '') {
+        journal('Aucune adresse pour envoyer l\'alerte (renseigne DEVELOPPEUR_EMAIL dans config.php).');
         return;
     }
     envoyer_email(
-        $destinataires,
+        [['email' => DEVELOPPEUR_EMAIL]],
         '[' . APP_NAME . '] La sauvegarde de la base a échoué',
         gabarit_email('Sauvegarde en échec',
-            '<p>La sauvegarde automatique de la nuit n\'a pas pu se terminer :</p>'
+            '<p>La sauvegarde automatique n\'a pas pu se terminer :</p>'
             . '<p style="background:#faf6f8;border-left:3px solid #b3261e;padding:12px 16px;border-radius:6px;">' . e($probleme) . '</p>'
-            . '<p>Les sauvegardes précédentes sont intactes. Merci de vérifier la tâche planifiée sur l\'hébergeur.</p>',
+            . '<p>Les sauvegardes précédentes sont intactes. Vérifie la tâche planifiée et le fichier logs/sauvegarde.log sur le serveur.</p>',
             'Sauvegarde en échec')
     );
 }
