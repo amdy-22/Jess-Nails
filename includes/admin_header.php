@@ -2,7 +2,7 @@
 /**
  * En-tête de l'espace admin. Avant de l'inclure, une page peut définir :
  *   $pageTitle   : titre de l'onglet
- *   $activeAdmin : 'tableau', 'reservations', 'prestations', 'galerie', 'messages', 'praticiennes', 'horaires'
+ *   $activeAdmin : 'tableau', 'reservations', 'statistiques', 'prestations', 'galerie', 'messages', 'praticiennes', 'horaires'
  */
 $pageTitle   = $pageTitle   ?? 'Administration';
 $activeAdmin = $activeAdmin ?? '';
@@ -51,6 +51,7 @@ try {
             <ul class="nav-liens">
                 <?= admin_lien('tableau', '', 'Tableau de bord', $activeAdmin) ?>
                 <?= admin_lien('reservations', 'reservations', 'Réservations', $activeAdmin) ?>
+                <?= admin_lien('statistiques', 'statistiques', 'Statistiques', $activeAdmin) ?>
                 <?= admin_lien('prestations', 'prestations', 'Prestations', $activeAdmin) ?>
                 <?= admin_lien('galerie', 'galerie', 'Galerie', $activeAdmin) ?>
                 <?= admin_lien('messages', 'messages', 'Messages', $activeAdmin, $messagesNonLus) ?>
