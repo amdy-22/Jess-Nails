@@ -4,9 +4,13 @@
  */
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/admin_actions.php';
+require_once __DIR__ . '/../includes/rappels_whatsapp.php';
 require_admin();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['rappel_whatsapp'])) {
+        traiter_rappel_whatsapp();
+    }
     traiter_action_admin();
 }
 
@@ -35,6 +39,8 @@ $stmt = db()->query(sql_reservations_admin() . "
     WHERE DATE(r.debut) = CURDATE() AND r.statut IN ('confirmee','terminee','absente')
     ORDER BY r.debut");
 $duJour = $stmt->fetchAll();
+
+$rappelsWhatsapp = rappels_whatsapp_du_moment();
 
 // ---------- À traiter ----------
 $aCloturer = db()->query(sql_reservations_admin() . "
@@ -88,6 +94,8 @@ require __DIR__ . '/../includes/admin_header.php';
     </div>
 </section>
 
+<?php afficher_rappels_whatsapp($rappelsWhatsapp, ADMIN_URL . '/'); ?>
+
 <?php if ($aCloturer || $aRembourser): ?>
 <section class="bloc-compte">
     <h2>À traiter</h2>
@@ -111,4 +119,29 @@ require __DIR__ . '/../includes/admin_header.php';
     <?php endif; ?>
 </section>
 
-<?php require __DIR__ . '/../includes/admin_footer.php'; ?>
+<script>
+// Le bloc « Rappels WhatsApp » se met à jour tout seul (chaque minute, et juste après un clic sur « Envoyer »)
+(function () {
+    function actualiser() {
+        if (document.hidden) { return; }
+        fetch(location.href, { credentials: 'same-origin' })
+            .then(function (r) { return r.text(); })
+            .then(function (html) {
+                var neuf = new DOMParser().parseFromString(html, 'text/html').getElementById('rappels-whatsapp');
+                var actuel = document.getElementById('rappels-whatsapp');
+                if (neuf && actuel) { actuel.replaceWith(neuf); }
+                // la pastille du menu suit aussi
+                var menuNeuf = new DOMParser().parseFromString(html, 'text/html').querySelector('.nav-liens li');
+                var menu = document.querySelector('.nav-liens li');
+                if (menuNeuf && menu) { menu.innerHTML = menuNeuf.innerHTML; }
+            })
+            .catch(function () {});
+    }
+    setInterval(actualiser, 60000);
+    document.addEventListener('submit', function (e) {
+        if (e.target.classList && e.target.classList.contains('form-rappel')) { setTimeout(actualiser, 2000); }
+    });
+})();
+</script>
+
+<?php require __DIR__ . '/../includes/admin_footer.php';

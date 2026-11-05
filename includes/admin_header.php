@@ -9,10 +9,10 @@ $activeAdmin = $activeAdmin ?? '';
 $admin       = current_user();
 require_once __DIR__ . '/icones.php';
 
-function admin_lien(string $page, string $fichier, string $libelle, string $actif, int $compteur = 0): string
+function admin_lien(string $page, string $fichier, string $libelle, string $actif, int $compteur = 0, string $texteCompteur = 'non lus'): string
 {
     $classe = $page === $actif ? ' class="actif" aria-current="page"' : '';
-    $pastille = $compteur > 0 ? ' <span class="compteur-nav" aria-label="' . $compteur . ' non lus">' . $compteur . '</span>' : '';
+    $pastille = $compteur > 0 ? ' <span class="compteur-nav" aria-label="' . $compteur . ' ' . e($texteCompteur) . '">' . $compteur . '</span>' : '';
     return '<li><a href="' . ADMIN_URL . '/' . $fichier . '"' . $classe . '>'
         . icone($page) . '<span>' . e($libelle) . '</span>' . $pastille . '</a></li>';
 }
@@ -23,6 +23,10 @@ try {
 } catch (Throwable $e) {
     $messagesNonLus = 0;
 }
+
+// Rappels WhatsApp à envoyer dans l'heure qui vient (0 si l'étape 24 n'est pas migrée)
+require_once __DIR__ . '/rappels_whatsapp.php';
+$rappelsAEnvoyer = compter_rappels_whatsapp_a_envoyer();
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -49,7 +53,7 @@ try {
 
         <nav id="menu-principal" class="nav">
             <ul class="nav-liens">
-                <?= admin_lien('tableau', '', 'Tableau de bord', $activeAdmin) ?>
+                <?= admin_lien('tableau', '', 'Tableau de bord', $activeAdmin, $rappelsAEnvoyer, 'rappels WhatsApp à envoyer') ?>
                 <?= admin_lien('reservations', 'reservations', 'Réservations', $activeAdmin) ?>
                 <?= admin_lien('statistiques', 'statistiques', 'Statistiques', $activeAdmin) ?>
                 <?= admin_lien('prestations', 'prestations', 'Prestations', $activeAdmin) ?>
