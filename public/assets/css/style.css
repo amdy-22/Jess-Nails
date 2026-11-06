@@ -723,8 +723,8 @@ input, select, textarea {
     position: relative; flex: 0 0 calc((100% - 28px) / 3); height: 340px;
     scroll-snap-align: start; border-radius: var(--rayon); overflow: hidden; background: var(--accent-doux);
 }
-.carrousel-slide img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
-.carrousel-slide:hover img { transform: scale(1.04); }
+.carrousel-slide img, .carrousel-slide video { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
+.carrousel-slide:hover img, .carrousel-slide:hover video { transform: scale(1.04); }
 .carrousel-btn {
     position: absolute; top: 170px; transform: translateY(-50%); z-index: 2;
     width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
@@ -974,8 +974,8 @@ input, select, textarea {
     position: relative; display: block; margin: 0 0 14px; break-inside: avoid;
     border-radius: var(--rayon); overflow: hidden; background: var(--accent-doux);
 }
-.galerie-item img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
-.galerie-item:hover img, .galerie-item:focus-visible img { transform: scale(1.03); }
+.galerie-item img, .galerie-item video { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
+.galerie-item:hover img, .galerie-item:focus-visible img, .galerie-item:hover video { transform: scale(1.03); }
 .galerie-legende {
     position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 12px 10px;
     background: linear-gradient(transparent, rgba(0, 0, 0, .6)); color: #fff; font-size: .85rem;
@@ -988,7 +988,8 @@ input, select, textarea {
 }
 .visionneuse[hidden] { display: none; }
 .visionneuse figure { margin: 0; max-width: 100%; max-height: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.visionneuse img { max-width: min(92vw, 1600px); max-height: 82vh; object-fit: contain; border-radius: 6px; }
+.visionneuse img, .visionneuse video { max-width: min(92vw, 1600px); max-height: 82vh; object-fit: contain; border-radius: 6px; background: #000; }
+.visionneuse img[hidden], .visionneuse video[hidden] { display: none; }
 .visionneuse figcaption { color: #fff; font-size: .95rem; text-align: center; }
 .visionneuse button {
     position: absolute; background: rgba(255, 255, 255, .12); color: #fff; border: 0;
@@ -1316,9 +1317,9 @@ body.sans-defilement .whatsapp-flottant { display: none; }   /* caché quand la 
     box-shadow: 0 2px 10px rgba(43, 29, 42, .05);
 }
 .photo-admin-image { position: relative; display: block; flex: none; aspect-ratio: 4 / 3; min-height: 0; overflow: hidden; background: var(--accent-doux); }
-.photo-admin-image img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-admin-image img, .photo-admin-image video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .photo-admin-image .badge { position: absolute; top: 10px; left: 10px; z-index: 1; }
-.photo-masquee .photo-admin-image img { opacity: .4; filter: grayscale(.4); }
+.photo-masquee .photo-admin-image img, .photo-masquee .photo-admin-image video { opacity: .4; filter: grayscale(.4); }
 .photo-admin-form { display: flex; flex-direction: column; gap: 8px; padding: 14px 14px 0; margin: 0; }
 .photo-admin-form input[type="text"],
 .photo-admin-form select {
@@ -1435,3 +1436,15 @@ section.resa-bloc.bloc-reglage { display: flex; flex-direction: row; gap: 1rem; 
 .bloc-reglage p { margin: 0; max-width: 60ch; }
 .form-whatsapp { display: flex !important; flex-direction: row !important; gap: .6rem; align-items: center; flex-wrap: wrap; }
 .form-whatsapp .champ { min-width: 13rem; }
+
+/* ===== Vidéos dans la galerie ===== */
+.video-lecture {
+    position: absolute; top: 50%; left: 50%; width: 52px; height: 52px; margin: -26px 0 0 -26px;
+    border-radius: 50%; background: rgba(0, 0, 0, .55); pointer-events: none;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, .85) inset;
+}
+.video-lecture::after {
+    content: ''; position: absolute; top: 50%; left: 50%; margin: -9px 0 0 -6px;
+    border-style: solid; border-width: 9px 0 9px 15px; border-color: transparent transparent transparent #fff;
+}
+.photo-admin-image .badge-video { left: auto; right: 10px; }

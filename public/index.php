@@ -53,8 +53,7 @@ require __DIR__ . '/../includes/header.php';
                 <?php foreach ($dernieresPhotos as $i => $ph): ?>
                     <a href="<?= BASE_URL ?>/galerie" class="carrousel-slide"
                        aria-label="Photo <?= $i + 1 ?> sur <?= count($dernieresPhotos) ?><?= $ph['legende'] ? ' : ' . e($ph['legende']) : '' ?>">
-                        <img src="<?= e(url_photo($ph['fichier'], true)) ?>" alt="<?= e($ph['legende'] ?? 'Réalisation ' . APP_NAME) ?>"
-                             width="<?= (int) $ph['largeur'] ?>" height="<?= (int) $ph['hauteur'] ?>" <?= $i > 2 ? 'loading="lazy"' : '' ?>>
+                        <?= vignette_html($ph, $ph['legende'] ?? (est_video($ph) ? 'Vidéo ' : 'Réalisation ') . APP_NAME, $i > 2) ?>
                         <?php if ($ph['legende']): ?><span class="galerie-legende"><?= e($ph['legende']) ?></span><?php endif; ?>
                     </a>
                 <?php endforeach; ?>

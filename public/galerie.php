@@ -1,6 +1,6 @@
 <?php
 /**
- * Galerie photos publique, filtrable par catégorie, avec visionneuse plein écran.
+ * Galerie photos et vidéos publique, filtrable par catégorie, avec visionneuse plein écran.
  * Sans JavaScript, chaque vignette ouvre simplement la grande photo.
  */
 require_once __DIR__ . '/../includes/auth.php';
@@ -44,15 +44,15 @@ require __DIR__ . '/../includes/header.php';
 </section>
 
 <?php if (!$photos): ?>
-    <p class="discret">Les photos arrivent bientôt.</p>
+    <p class="discret">Les photos et vidéos arrivent bientôt.</p>
 <?php else: ?>
     <div class="galerie" data-galerie>
         <?php foreach ($photos as $ph): ?>
             <a href="<?= e(url_photo($ph['fichier'])) ?>" class="galerie-item"
+               data-type="<?= est_video($ph) ? 'video' : 'photo' ?>"
                data-legende="<?= e($ph['legende'] ?? '') ?>"
                style="aspect-ratio: <?= max(1, (int) $ph['largeur']) ?> / <?= max(1, (int) $ph['hauteur']) ?>">
-                <img src="<?= e(url_photo($ph['fichier'], true)) ?>" alt="<?= e($ph['legende'] ?? 'Réalisation ' . APP_NAME) ?>"
-                     width="<?= (int) $ph['largeur'] ?>" height="<?= (int) $ph['hauteur'] ?>" loading="lazy">
+                <?= vignette_html($ph, $ph['legende'] ?? (est_video($ph) ? 'Vidéo ' : 'Réalisation ') . APP_NAME) ?>
                 <?php if ($ph['legende']): ?><span class="galerie-legende"><?= e($ph['legende']) ?></span><?php endif; ?>
             </a>
         <?php endforeach; ?>
@@ -64,14 +64,15 @@ require __DIR__ . '/../includes/header.php';
 <?php endif; ?>
 
 <!-- Visionneuse (remplie par app.js) -->
-<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-label="Photo agrandie">
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-label="Agrandissement">
     <button type="button" class="visionneuse-fermer" aria-label="Fermer">&times;</button>
-    <button type="button" class="visionneuse-prec" aria-label="Photo précédente">&#8249;</button>
+    <button type="button" class="visionneuse-prec" aria-label="Précédent">&#8249;</button>
     <figure>
         <img src="" alt="">
+        <video controls playsinline hidden></video>
         <figcaption></figcaption>
     </figure>
-    <button type="button" class="visionneuse-suiv" aria-label="Photo suivante">&#8250;</button>
+    <button type="button" class="visionneuse-suiv" aria-label="Suivant">&#8250;</button>
 </div>
 
 <?php require __DIR__ . '/../includes/footer.php';

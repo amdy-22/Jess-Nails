@@ -1,6 +1,6 @@
 <?php
 /**
- * Galerie photos (admin) : envoi de plusieurs photos, légende, catégorie, ordre, masquer, supprimer.
+ * Galerie photos et vidéos (admin) : envoi de plusieurs fichiers, légende, catégorie, ordre, masquer, supprimer.
  */
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/galerie.php';
@@ -14,32 +14,46 @@ $urlPage = ADMIN_URL . '/galerie';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Envoi plus lourd que post_max_size : PHP vide $_POST, le jeton CSRF disparaît avec
     if (!$_POST && (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 0) {
-        flash('erreur', 'Envoi trop lourd pour le serveur (limite : ' . ini_get('post_max_size') . ' au total). Envoie moins de photos à la fois.');
+        flash('erreur', 'Envoi trop lourd pour le serveur (limite : ' . ini_get('post_max_size') . ' au total). Envoie moins de fichiers à la fois (une vidéo à la fois si elles sont lourdes).');
         redirect($urlPage);
     }
     csrf_verify();
     $action = $_POST['action'] ?? '';
     $id     = (int) ($_POST['id'] ?? 0);
 
-    // ---------- Ajouter des photos ----------
+    // ---------- Ajouter des photos et des vidéos ----------
     if ($action === 'ajouter') {
         $categorieId = (int) ($_POST['categorie'] ?? 0) ?: null;
         $legende     = mb_substr(trim($_POST['legende'] ?? ''), 0, 150);
         $fichiers    = array_filter(fichiers_envoyes($_FILES['photos'] ?? []), fn ($f) => ($f['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE);
 
         if (!$fichiers) {
-            flash('erreur', 'Choisis au moins une photo.');
+            flash('erreur', 'Choisis au moins une photo ou une vidéo.');
             redirect($urlPage);
         }
 
         $ordre = (int) db()->query('SELECT COALESCE(MAX(ordre), 0) FROM photos')->fetchColumn();
         $stmt  = db()->prepare('INSERT INTO photos (fichier, largeur, hauteur, legende, categorie_id, ordre) VALUES (?, ?, ?, ?, ?, ?)');
+        $stmtVideo = db()->prepare("INSERT INTO photos (fichier, type, largeur, hauteur, legende, categorie_id, ordre) VALUES (?, 'video', ?, ?, ?, ?, ?)");
         $ajoutees = 0;
+        $videos   = 0;
         $erreurs  = [];
         foreach ($fichiers as $f) {
             try {
-                $photo = traiter_photo($f);
-                $stmt->execute([$photo['fichier'], $photo['largeur'], $photo['hauteur'], $legende !== '' ? $legende : null, $categorieId, ++$ordre]);
+                if (est_video_envoyee($f)) {
+                    $v = traiter_video($f);
+                    try {
+                        $stmtVideo->execute([$v['fichier'], $v['largeur'], $v['hauteur'], $legende !== '' ? $legende : null, $categorieId, ++$ordre]);
+                    } catch (PDOException $e) {   // colonne « type » absente : migration pas encore lancée
+                        supprimer_fichiers_photo($v['fichier']);
+                        error_log('[Galerie] ' . $e->getMessage());
+                        throw new RuntimeException(($f['name'] ?? 'vidéo') . ' : lance d\'abord la migration sql/etape28_galerie_videos.sql.');
+                    }
+                    $videos++;
+                } else {
+                    $photo = traiter_photo($f);
+                    $stmt->execute([$photo['fichier'], $photo['largeur'], $photo['hauteur'], $legende !== '' ? $legende : null, $categorieId, ++$ordre]);
+                }
                 $ajoutees++;
             } catch (RuntimeException $e) {
                 $erreurs[] = $e->getMessage();
@@ -47,7 +61,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($ajoutees) {
-            flash('succes', $ajoutees . ' photo' . ($ajoutees > 1 ? 's ajoutées' : ' ajoutée') . ' à la galerie.');
+            $photosAjoutees = $ajoutees - $videos;
+            $morceaux = [];
+            if ($photosAjoutees) { $morceaux[] = $photosAjoutees . ' photo' . ($photosAjoutees > 1 ? 's' : ''); }
+            if ($videos)         { $morceaux[] = $videos . ' vidéo' . ($videos > 1 ? 's' : ''); }
+            flash('succes', implode(' et ', $morceaux) . ($ajoutees > 1 ? ' ajoutées' : ' ajoutée') . ' à la galerie.');
         }
         if ($erreurs) {
             flash('erreur', implode(' ', $erreurs));
@@ -60,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $legende = mb_substr(trim($_POST['legende'] ?? ''), 0, 150);
         db()->prepare('UPDATE photos SET legende = ?, categorie_id = ? WHERE id = ?')
             ->execute([$legende !== '' ? $legende : null, (int) ($_POST['categorie'] ?? 0) ?: null, $id]);
-        flash('succes', 'Photo mise à jour.');
+        flash('succes', 'Mis à jour.');
         redirect($urlPage . '#photo-' . $id);
     }
 
@@ -100,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($fichier = $st->fetchColumn()) {
             db()->prepare('DELETE FROM photos WHERE id = ?')->execute([$id]);
             supprimer_fichiers_photo($fichier);
-            flash('succes', 'Photo supprimée.');
+            flash('succes', 'Supprimé de la galerie.');
         }
         redirect($urlPage);
     }
@@ -118,8 +136,10 @@ $photos = db()->query(
 )->fetchAll();
 $nbVisibles = count(array_filter($photos, fn ($p) => (int) $p['visible'] === 1));
 $limite = min(limite_envoi_serveur() ?: GALERIE_MAX_OCTETS, GALERIE_MAX_OCTETS);
+$limiteVideo = min(limite_envoi_serveur() ?: VIDEO_MAX_OCTETS, VIDEO_MAX_OCTETS);
+$nbVideos = count(array_filter($photos, 'est_video'));
 
-$pageTitle   = 'Galerie photos';
+$pageTitle   = 'Galerie';
 $activeAdmin = 'galerie';
 require __DIR__ . '/../includes/admin_header.php';
 
@@ -135,19 +155,19 @@ function select_categories(array $categories, ?int $choisie, string $id): string
 ?>
 
 <section class="entete-page">
-    <h1>Galerie photos</h1>
-    <p class="discret"><?= count($photos) ?> photo<?= count($photos) > 1 ? 's' : '' ?>, dont <?= $nbVisibles ?> visible<?= $nbVisibles > 1 ? 's' : '' ?> sur le site.
+    <h1>Galerie</h1>
+    <p class="discret"><?= count($photos) ?> élément<?= count($photos) > 1 ? 's' : '' ?><?= $nbVideos ? ' (dont ' . $nbVideos . ' vidéo' . ($nbVideos > 1 ? 's' : '') . ')' : '' ?>, dont <?= $nbVisibles ?> visible<?= $nbVisibles > 1 ? 's' : '' ?> sur le site.
         <a href="<?= BASE_URL ?>/galerie" target="_blank">Voir la galerie</a></p>
 </section>
 
 <form method="post" enctype="multipart/form-data" class="resa-bloc galerie-envoi">
     <?= csrf_field() ?>
     <input type="hidden" name="action" value="ajouter">
-    <h2>Ajouter des photos</h2>
+    <h2>Ajouter des photos ou des vidéos</h2>
     <div class="champ">
-        <label for="photos">Photos (JPG, PNG ou WebP, <?= round($limite / 1024 / 1024) ?> Mo max chacune)</label>
-        <input type="file" id="photos" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple required>
-        <span class="discret petit-note">Tu peux en choisir plusieurs d'un coup. Elles sont redimensionnées automatiquement.</span>
+        <label for="photos">Photos (JPG, PNG, WebP, <?= round($limite / 1024 / 1024) ?> Mo max) ou vidéos (MP4, MOV, WebM, <?= round($limiteVideo / 1024 / 1024) ?> Mo max)</label>
+        <input type="file" id="photos" name="photos[]" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm,.mp4,.mov,.m4v,.webm" multiple required>
+        <span class="discret petit-note">Tu peux en choisir plusieurs d'un coup. Les photos sont redimensionnées automatiquement. Pour les vidéos, privilégie des clips courts (15 à 30 secondes) au format MP4.</span>
     </div>
     <div class="ligne-2">
         <div class="champ">
@@ -163,14 +183,15 @@ function select_categories(array $categories, ?int $choisie, string $id): string
 </form>
 
 <?php if (!$photos): ?>
-    <p class="discret">Aucune photo pour l'instant. Ajoute tes plus belles réalisations !</p>
+    <p class="discret">Rien pour l'instant. Ajoute tes plus belles photos et vidéos !</p>
 <?php else: ?>
     <div class="galerie-admin">
         <?php foreach ($photos as $i => $ph): ?>
             <article class="photo-admin<?= $ph['visible'] ? '' : ' photo-masquee' ?>" id="photo-<?= (int) $ph['id'] ?>">
                 <a href="<?= e(url_photo($ph['fichier'])) ?>" target="_blank" class="photo-admin-image">
-                    <img src="<?= e(url_photo($ph['fichier'], true)) ?>" alt="<?= e($ph['legende'] ?? '') ?>" loading="lazy">
-                    <?php if (!$ph['visible']): ?><span class="badge badge-annule">Masquée</span><?php endif; ?>
+                    <?= vignette_html($ph, $ph['legende'] ?? '') ?>
+                    <?php if (est_video($ph)): ?><span class="badge badge-neutre badge-video">Vidéo</span><?php endif; ?>
+                    <?php if (!$ph['visible']): ?><span class="badge badge-annule badge-masque">Masquée</span><?php endif; ?>
                 </a>
 
                 <form method="post" class="photo-admin-form">
@@ -202,7 +223,7 @@ function select_categories(array $categories, ?int $choisie, string $id): string
                         <input type="hidden" name="id" value="<?= (int) $ph['id'] ?>">
                         <button type="submit" class="btn-action"><?= $ph['visible'] ? 'Masquer' : 'Afficher' ?></button>
                     </form>
-                    <form method="post" data-confirmer="Supprimer définitivement cette photo ?">
+                    <form method="post" data-confirmer="Supprimer définitivement <?= est_video($ph) ? 'cette vidéo' : 'cette photo' ?> ?">
                         <?= csrf_field() ?>
                         <input type="hidden" name="action" value="supprimer">
                         <input type="hidden" name="id" value="<?= (int) $ph['id'] ?>">
