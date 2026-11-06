@@ -774,6 +774,7 @@ input, select, textarea {
 .carte-soin .btn { text-align: center; }
 .soin-image {
     width: calc(100% + 44px);
+    max-width: none;   /* sinon la règle globale img { max-width: 100% } la rogne et laisse un vide à droite */
     margin: -22px -22px 0;
     aspect-ratio: 16 / 9;
     object-fit: cover;

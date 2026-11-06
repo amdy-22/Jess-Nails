@@ -29,7 +29,7 @@ require __DIR__ . '/../includes/header.php';
 
 <section class="entete-page">
     <h1>Nos prestations</h1>
-    <p class="discret">Choisissez votre soin. Vous réglez sur place, ou réglez un acompte en ligne par Mobile Money si vous préférez.</p>
+    <p class="discret">Choisissez votre soin. <?= acompte_en_ligne_actif() ? 'Vous réglez sur place, ou réglez un acompte en ligne par Mobile Money si vous préférez.' : 'Vous réglez sur place, le jour de votre rendez-vous.' ?></p>
 
     <?php if ($categories): ?>
         <nav class="filtres" aria-label="Catégories">
@@ -70,7 +70,7 @@ require __DIR__ . '/../includes/header.php';
                                 <dt>Prix</dt>
                                 <dd class="prix"><?= format_fcfa((int) $soin['prix_fcfa']) ?></dd>
                             </div>
-                            <?php if ($soin['acompte_fcfa'] > 0): ?>
+                            <?php if ($soin['acompte_fcfa'] > 0 && acompte_en_ligne_actif()): ?>
                                 <div>
                                     <dt>Acompte (facultatif)</dt>
                                     <dd><?= format_fcfa((int) $soin['acompte_fcfa']) ?></dd>
@@ -91,4 +91,4 @@ require __DIR__ . '/../includes/header.php';
     </section>
 <?php endforeach; ?>
 
-<?php require __DIR__ . '/../includes/footer.php'; ?>
+<?php require __DIR__ . '/../includes/footer.php';

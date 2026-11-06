@@ -32,7 +32,7 @@ require __DIR__ . '/../includes/header.php';
     <ul>
         <li>Gérer vos réservations, annulations et déplacements.</li>
         <li>Vous envoyer les e-mails de confirmation, de rappel et de changement de rendez-vous.</li>
-        <li>Encaisser et, le cas échéant, rembourser un acompte.</li>
+        <?php if (acompte_en_ligne_actif()): ?><li>Encaisser et, le cas échéant, rembourser un acompte.</li><?php endif; ?>
         <li>Respecter nos obligations comptables.</li>
     </ul>
     <p>Aucune publicité, aucune revente de données, aucun envoi commercial sans votre accord.</p>

@@ -1,6 +1,6 @@
 <?php
 /**
- * Conditions de réservation (annulation, déplacement, acompte, retard, absence).
+ * Conditions de réservation (annulation, déplacement, règlement, retard, absence).
  */
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/reservation.php';
@@ -32,15 +32,17 @@ require __DIR__ . '/../includes/header.php';
 
     <h2>3. Annuler ou déplacer un rendez-vous</h2>
     <p>Vous pouvez annuler ou déplacer votre rendez-vous gratuitement, depuis votre espace « Mon compte », <strong>jusqu'à <?= DELAI_ANNULATION_H ?> heures avant</strong> l'heure prévue.</p>
+    <?php if (acompte_en_ligne_actif()): ?>
     <p>Si vous annulez dans ce délai, l'acompte éventuellement payé vous est remboursé intégralement, sur le moyen de paiement utilisé ou en espèces à l'institut, dans un délai de 14 jours.</p>
-    <p>Moins de <?= DELAI_ANNULATION_H ?> heures avant le rendez-vous, l'annulation en ligne n'est plus possible : contactez l'institut<?= SALON_TELEPHONE !== '' ? ' au ' . e(SALON_TELEPHONE) : '' ?>. L'acompte reste alors acquis à l'institut, sauf cas de force majeure dûment justifié.</p>
+    <?php endif; ?>
+    <p>Moins de <?= DELAI_ANNULATION_H ?> heures avant le rendez-vous, l'annulation en ligne n'est plus possible : contactez l'institut<?= SALON_TELEPHONE !== '' ? ' au ' . e(SALON_TELEPHONE) : '' ?>. <?php if (acompte_en_ligne_actif()): ?>L'acompte reste alors acquis à l'institut, sauf cas de force majeure dûment justifié.<?php endif; ?></p>
 
     <h2>4. Retard et absence</h2>
     <p>Merci d'arriver quelques minutes avant l'heure. Au-delà de <?= RETARD_TOLERE_MIN ?> minutes de retard, le soin peut être écourté pour ne pas pénaliser la cliente suivante, au même tarif, ou reporté selon les disponibilités.</p>
-    <p>En cas d'absence sans prévenir, l'acompte éventuellement payé reste acquis à l'institut. Après plusieurs absences, l'institut peut demander un acompte pour les réservations suivantes.</p>
+    <p><?php if (acompte_en_ligne_actif()): ?>En cas d'absence sans prévenir, l'acompte éventuellement payé reste acquis à l'institut. Après plusieurs absences, l'institut peut demander un acompte pour les réservations suivantes.<?php else: ?>En cas d'absence répétée sans prévenir, l'institut peut refuser les réservations suivantes ou demander un règlement à l'avance.<?php endif; ?></p>
 
     <h2>5. Annulation par l'institut</h2>
-    <p>Si l'institut doit annuler ou déplacer votre rendez-vous (praticienne indisponible, fermeture exceptionnelle), vous êtes prévenue par e-mail. Vous pouvez accepter le nouveau créneau ou annuler : l'acompte est alors remboursé intégralement.</p>
+    <p>Si l'institut doit annuler ou déplacer votre rendez-vous (praticienne indisponible, fermeture exceptionnelle), vous êtes prévenue par e-mail. Vous pouvez accepter le nouveau créneau ou annuler<?= acompte_en_ligne_actif() ? ' : l\'acompte est alors remboursé intégralement' : '' ?>.</p>
 
     <h2>6. Santé et contre-indications</h2>
     <p>Signalez-nous à la réservation (champ « Une précision ? ») ou à votre arrivée toute allergie, grossesse, peau sensible ou traitement en cours. La praticienne peut adapter ou refuser un soin si votre sécurité l'exige.</p>

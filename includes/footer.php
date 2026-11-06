@@ -39,7 +39,7 @@ $utilisateurPied = current_user();
                         <li><a href="<?= BASE_URL ?>/connexion">Se connecter</a></li>
                         <li><a href="<?= BASE_URL ?>/inscription">Créer un compte</a></li>
                     <?php endif; ?>
-                    <li><a href="<?= BASE_URL ?>/conditions">Annulation et acompte</a></li>
+                    <li><a href="<?= BASE_URL ?>/conditions"><?= acompte_en_ligne_actif() ? 'Annulation et acompte' : 'Annulation et conditions' ?></a></li>
                 </ul>
             </details>
 
@@ -73,12 +73,13 @@ $utilisateurPied = current_user();
             $moyens[] = 'appeler le <a href="tel:' . e(SALON_TELEPHONE) . '">' . e(SALON_TELEPHONE) . '</a>';
         }
         ?>
-        <p class="pied-phrase">Vous pouvez aussi réserver <?= implode(' ou ', $moyens) ?>. Règlement sur place, ou acompte en ligne par Mobile Money.</p>
+        <p class="pied-phrase">Vous pouvez aussi réserver <?= implode(' ou ', $moyens) ?>. <?= acompte_en_ligne_actif() ? 'Règlement sur place, ou acompte en ligne par Mobile Money.' : 'Règlement sur place.' ?></p>
 
         <p class="pied-suggestion">
             Une idée pour améliorer le site ?
             <a href="<?= BASE_URL ?>/suggestion?depuis=<?= rawurlencode(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/') ?>">Faire une suggestion</a>
         </p>
+
         <p class="pied-lieu">Cotonou, Bénin</p>
 
         <div class="pied-legal">
