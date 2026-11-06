@@ -25,7 +25,7 @@ $utilisateurPied = current_user();
                         <li><a href="<?= BASE_URL ?>/prestations#<?= e($cat['slug']) ?>"><?= e($cat['nom']) ?></a></li>
                     <?php endforeach; ?>
                     <li><a href="<?= BASE_URL ?>/prestations">Tous les soins et tarifs</a></li>
-                    <li><a href="<?= BASE_URL ?>/galerie">Galerie photos</a></li>
+                    <li><a href="<?= BASE_URL ?>/galerie">Galerie photos et vidéos</a></li>
                 </ul>
             </details>
 
