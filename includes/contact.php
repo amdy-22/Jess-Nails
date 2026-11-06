@@ -4,12 +4,13 @@
  * Rien de secret : ce fichier est versionné.
  */
 
-// Numéro WhatsApp de l'institut. Vide = on reprend SALON_TELEPHONE (config.php).
-const SALON_WHATSAPP = '62874404';                 // ex. '01 97 00 00 00'
+// Numéro WhatsApp de l'institut. Il se règle dans l'admin (page Horaires, « Numéro WhatsApp »).
+// Cette constante n'est qu'un secours : vide = on reprend SALON_TELEPHONE (config.php).
+const SALON_WHATSAPP = '';                 // ex. '01 97 00 00 00'
 
 // Position GPS pour la carte, "latitude,longitude" (clic droit sur Google Maps > copier les coordonnées).
 // Vide = pas de carte, juste un lien "Ouvrir dans Google Maps" construit depuis l'adresse.
-const SALON_GPS = '6.3776546, 2.4645233';                      // ex. '6.3703,2.4140'
+const SALON_GPS = '';                      // ex. '6.3703,2.4140'
 
 // Message pré-rempli par défaut quand on ouvre WhatsApp
 const WHATSAPP_MESSAGE_DEFAUT = 'Bonjour, j\'ai une question pour ' . APP_NAME . '.';
@@ -36,7 +37,8 @@ function numero_international(string $numero): string
 /** Numéro WhatsApp de l'institut, '' s'il n'est pas configuré. */
 function whatsapp_institut(): string
 {
-    return numero_international(SALON_WHATSAPP !== '' ? SALON_WHATSAPP : SALON_TELEPHONE);
+    $admin = function_exists('parametre') ? numero_international(parametre('whatsapp_numero', '')) : '';
+    return $admin !== '' ? $admin : numero_international(SALON_WHATSAPP !== '' ? SALON_WHATSAPP : SALON_TELEPHONE);
 }
 
 /**

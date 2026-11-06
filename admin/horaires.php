@@ -4,6 +4,7 @@
  */
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/reservation.php';
+require_once __DIR__ . '/../includes/contact.php';   // numero_international()
 require_admin();
 
 $urlPage = ADMIN_URL . '/horaires';
@@ -12,6 +13,22 @@ $jours   = [1 => 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'D
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
     $action = $_POST['action'] ?? '';
+
+    // ---------- Numéro WhatsApp de l'institut ----------
+    if ($action === 'whatsapp') {
+        $saisi = trim($_POST['whatsapp'] ?? '');
+        if ($saisi === '') {
+            definir_parametre('whatsapp_numero', '');
+            flash('succes', 'Numéro WhatsApp retiré : le numéro de téléphone de l\'institut est utilisé à la place.');
+        } elseif (($intl = numero_international($saisi)) === '') {
+            flash('erreur', 'Numéro invalide : il doit compter 10 chiffres et commencer par 01 (ex. 01 97 00 00 00).');
+        } elseif (definir_parametre('whatsapp_numero', substr($intl, 3))) {
+            flash('succes', 'Numéro WhatsApp enregistré : les boutons WhatsApp du site utilisent maintenant le ' . substr($intl, 3) . '.');
+        } else {
+            flash('erreur', 'Réglage impossible : lance d\'abord la migration sql/etape26_parametres.sql.');
+        }
+        redirect($urlPage);
+    }
 
     // ---------- Horaires de la semaine ----------
     if ($action === 'horaires') {
@@ -106,6 +123,20 @@ require __DIR__ . '/../includes/admin_header.php';
     <p class="discret">Les créneaux proposés aux clientes sont calculés à partir de ces horaires.</p>
 </section>
 
+<section class="resa-bloc bloc-reglage" id="reglage-whatsapp">
+    <div>
+        <h2>Numéro WhatsApp</h2>
+        <p class="discret">Utilisé par le bouton WhatsApp du site, la page Contact, les questions sur un soin et les emails. Laisse vide pour reprendre le numéro de téléphone de l'institut.</p>
+    </div>
+    <form method="post" class="form-whatsapp">
+        <?= csrf_field() ?>
+        <input type="hidden" name="action" value="whatsapp">
+        <label for="whatsapp" class="sr-only">Numéro WhatsApp</label>
+        <div class="champ"><input type="tel" id="whatsapp" name="whatsapp" value="<?= e(parametre('whatsapp_numero', '')) ?>" placeholder="01 97 00 00 00" inputmode="tel" maxlength="20"></div>
+        <button type="submit" class="btn btn-plein">Enregistrer</button>
+    </form>
+</section>
+
 <div class="grille-profil grille-admin">
     <form method="post" class="resa-bloc">
         <?= csrf_field() ?>
@@ -182,4 +213,4 @@ require __DIR__ . '/../includes/admin_header.php';
     </section>
 </div>
 
-<?php require __DIR__ . '/../includes/admin_footer.php'; ?>
+<?php require __DIR__ . '/../includes/admin_footer.php';
