@@ -38,7 +38,11 @@ $confirmee  = $resa['statut'] === 'confirmee';
 $aVenir     = $debut > new DateTimeImmutable();
 
 // L'acompte en ligne est proposé : avant confirmation, ou plus tard si rien n'a été payé
-$peutPayer  = $aVenir && $dejaPaye === 0 && ($bloquee || $confirmee);
+$acompteActif = acompte_en_ligne_actif();   // désactivable depuis l'admin
+$peutPayer  = $acompteActif && $aVenir && $dejaPaye === 0 && ($bloquee || $confirmee);
+
+// Garde-fou : trop de rendez-vous déjà confirmés sans acompte -> l'acompte devient obligatoire pour celui-ci
+$plafondAtteint = $acompteActif && $enAttente && rdv_sans_acompte_a_venir((int) $client['id'], (int) $resa['id']) >= MAX_RDV_SANS_ACOMPTE;
 
 // =====================================================
 // Actions
@@ -54,6 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         if (!$bloquee) {
             flash('erreur', 'Le délai est dépassé, ce créneau n\'est plus bloqué. Choisis un nouveau créneau.');
+            redirect($urlRecap);
+        }
+        if ($plafondAtteint) {
+            flash('erreur', 'Tu as déjà ' . MAX_RDV_SANS_ACOMPTE . ' rendez-vous à venir sans acompte. Pour confirmer celui-ci, paye l\'acompte en ligne.');
             redirect($urlRecap);
         }
         $maj = db()->prepare("UPDATE reservations SET statut = 'confirmee' WHERE id = ? AND statut = 'en_attente_paiement'");
@@ -146,7 +154,7 @@ require __DIR__ . '/../../includes/header.php';
                 </form>
             </div>
         <?php endif; ?>
-        <a href="<?= BASE_URL ?>/profile" class="btn btn-plein btn-large">Voir mes rendez-vous</a>
+        <a href="<?= BASE_URL ?>/mon-compte" class="btn btn-plein btn-large">Voir mes rendez-vous</a>
 
     <?php elseif ($resa['statut'] === 'annulee'): ?>
         <p class="alerte alerte-erreur">Cette réservation a été annulée.</p>
@@ -161,8 +169,10 @@ require __DIR__ . '/../../includes/header.php';
             Ce créneau t'est réservé jusqu'à <?= $expireA->format('H\hi') ?>. Choisis comment tu veux régler pour confirmer.
         </p>
 
-                <?php require __DIR__ . '/../../includes/conditions_resume.php'; ?>
+        <?php require __DIR__ . '/../../includes/conditions_resume.php'; ?>
+
         <div class="choix-reglement">
+            <?php if ($acompteActif): ?>
             <form method="post" class="choix">
                 <?= csrf_field() ?>
                 <input type="hidden" name="reservation" value="<?= (int) $resa['id'] ?>">
@@ -171,8 +181,15 @@ require __DIR__ . '/../../includes/header.php';
                 <p class="discret"><?= format_fcfa($acompte) ?> par Mobile Money ou carte, le reste (<?= format_fcfa((int) $resa['prix_fcfa'] - $acompte) ?>) sur place.</p>
                 <button type="submit" class="btn btn-plein">Payer <?= format_fcfa($acompte) ?></button>
             </form>
-            <p class="discret petit-texte">Paiement en ligne sécurisé par FedaPay : MTN MoMo, Moov Money ou carte bancaire.</p>
+            <?php endif; ?>
 
+            <?php if ($plafondAtteint): ?>
+                <div class="choix">
+                    <p class="choix-titre">Tout régler sur place</p>
+                    <p class="discret">Indisponible pour cette réservation : tu as déjà <?= MAX_RDV_SANS_ACOMPTE ?> rendez-vous à venir sans acompte.
+                        Paye l'acompte pour confirmer celui-ci, ou termine d'abord un de tes rendez-vous.</p>
+                </div>
+            <?php else: ?>
             <form method="post" class="choix">
                 <?= csrf_field() ?>
                 <input type="hidden" name="reservation" value="<?= (int) $resa['id'] ?>">
@@ -181,7 +198,9 @@ require __DIR__ . '/../../includes/header.php';
                 <p class="discret">Aucun paiement maintenant. Tu règles <?= format_fcfa((int) $resa['prix_fcfa']) ?> à l'institut.</p>
                 <button type="submit" class="btn">Confirmer sans payer</button>
             </form>
+            <?php endif; ?>
         </div>
+        <?php if ($acompteActif): ?><p class="discret petit-texte">Paiement en ligne sécurisé par FedaPay : MTN MoMo, Moov Money ou carte bancaire.</p><?php endif; ?>
     <?php endif; ?>
 </section>
 

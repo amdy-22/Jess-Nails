@@ -64,6 +64,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
     $action = $_POST['action'] ?? '';
 
+    // ---------- Interrupteur de l'acompte en ligne ----------
+    if ($action === 'acompte_en_ligne') {
+        $actif = ($_POST['valeur'] ?? '') === '1';
+        if (definir_parametre('acompte_en_ligne', $actif ? '1' : '0')) {
+            flash('succes', $actif
+                ? 'Acompte en ligne réactivé : les clientes peuvent de nouveau payer un acompte.'
+                : 'Acompte en ligne désactivé : les réservations sont confirmées directement, réglées sur place.');
+        } else {
+            flash('erreur', 'Réglage impossible : lance d\'abord la migration sql/etape26_parametres.sql.');
+        }
+        redirect($urlPage);
+    }
+
     // ---------- Ajouter / modifier une prestation ----------
     if ($action === 'enregistrer') {
         $id          = (int) ($_POST['id'] ?? 0);
@@ -262,6 +275,24 @@ require __DIR__ . '/../includes/admin_header.php';
     <?php endif; ?>
 </section>
 
+<?php $acompteActif = acompte_en_ligne_actif(); ?>
+<section class="resa-bloc bloc-reglage">
+    <div>
+        <h2>Acompte en ligne : <?= $acompteActif ? 'activé' : 'désactivé' ?></h2>
+        <p class="discret">
+            <?= $acompteActif
+                ? 'Les clientes peuvent payer un acompte par Mobile Money ou carte (FedaPay), ou tout régler sur place.'
+                : 'Aucun paiement en ligne n\'est proposé : chaque réservation est confirmée tout de suite et réglée à l\'institut. Les acomptes déjà payés restent valables et remboursables.' ?>
+        </p>
+    </div>
+    <form method="post" data-confirmer="<?= $acompteActif ? 'Désactiver l\'acompte en ligne ? Les clientes ne pourront plus payer en ligne.' : 'Réactiver l\'acompte en ligne ?' ?>">
+        <?= csrf_field() ?>
+        <input type="hidden" name="action" value="acompte_en_ligne">
+        <input type="hidden" name="valeur" value="<?= $acompteActif ? '0' : '1' ?>">
+        <button type="submit" class="btn<?= $acompteActif ? '' : ' btn-plein' ?>"><?= $acompteActif ? 'Désactiver' : 'Réactiver' ?></button>
+    </form>
+</section>
+
 <?php if ($afficherForm): ?>
 <section class="resa-bloc form-admin" id="formulaire">
     <h2><?= $enEdition ? 'Modifier « ' . e($enEdition['nom']) . ' »' : 'Nouveau soin' ?></h2>
@@ -439,4 +470,4 @@ require __DIR__ . '/../includes/admin_header.php';
     </div>
 </section>
 
-<?php require __DIR__ . '/../includes/admin_footer.php'; ?>
+<?php require __DIR__ . '/../includes/admin_footer.php';

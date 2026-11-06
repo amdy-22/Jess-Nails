@@ -5,6 +5,7 @@
  */
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/reservation.php';
+require_once __DIR__ . '/../includes/notifications.php';
 require_login();   // pas connecté -> connexion/inscription, puis retour ici
 
 $user = current_user();
@@ -84,8 +85,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
                 $reservationId = (int) $pdo->lastInsertId();
                 enregistrer_soins_reservation($reservationId, $prestation);
+                if (!acompte_en_ligne_actif()) {   // acompte désactivé : confirmée tout de suite, réglée sur place
+                    $pdo->prepare("UPDATE reservations SET statut = 'confirmee' WHERE id = ?")->execute([$reservationId]);
+                }
                 $pdo->commit();
 
+                if (!acompte_en_ligne_actif()) {
+                    try {
+                        notifier_reservation_confirmee($reservationId);
+                    } catch (Throwable $e) {
+                        error_log('[Emails] ' . $e->getMessage());
+                    }
+                }
                 redirect(BASE_URL . '/paiement/initier?reservation=' . $reservationId);
             }
         } catch (Throwable $ex) {
@@ -211,10 +222,14 @@ require __DIR__ . '/../includes/header.php';
 
                 <div class="recap-prix">
                     <div><span><?= count($prestation['soins']) > 1 ? 'Prix des ' . count($prestation['soins']) . ' soins' : 'Prix du soin' ?></span><strong><?= format_fcfa((int) $prestation['prix_fcfa']) ?></strong></div>
-                    <?php if ($prestation['acompte_fcfa'] > 0): ?>
-                        <div class="discret"><span>Acompte en ligne (facultatif)</span><span><?= format_fcfa((int) $prestation['acompte_fcfa']) ?></span></div>
+                    <?php if (acompte_en_ligne_actif()): ?>
+                        <?php if ($prestation['acompte_fcfa'] > 0): ?>
+                            <div class="discret"><span>Acompte en ligne (facultatif)</span><span><?= format_fcfa((int) $prestation['acompte_fcfa']) ?></span></div>
+                        <?php endif; ?>
+                        <div class="discret"><span>Tu choisis à l'étape suivante : acompte en ligne ou tout sur place.</span></div>
+                    <?php else: ?>
+                        <div class="discret"><span>Réservation confirmée tout de suite, tu règles à l'institut le jour du rendez-vous.</span></div>
                     <?php endif; ?>
-                    <div class="discret"><span>Tu choisis à l'étape suivante : acompte en ligne ou tout sur place.</span></div>
                 </div>
 
                 <?php require __DIR__ . '/../includes/conditions_resume.php'; ?>

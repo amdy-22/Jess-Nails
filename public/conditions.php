@@ -16,13 +16,19 @@ require __DIR__ . '/../includes/header.php';
     <p class="discret">En vigueur au <?= format_date_fr(new DateTimeImmutable('2026-11-02')) ?>.</p>
 
     <h2>1. Réserver un soin</h2>
-    <p>La réservation en ligne nécessite un compte client. Le rendez-vous est confirmé dès que vous choisissez votre mode de règlement : tout sur place, ou acompte en ligne. Un e-mail de confirmation vous est envoyé.</p>
+    <p>La réservation en ligne nécessite un compte client. <?php if (acompte_en_ligne_actif()): ?>Le rendez-vous est confirmé dès que vous choisissez votre mode de règlement : tout sur place, ou acompte en ligne.<?php else: ?>Le rendez-vous est confirmé immédiatement, le règlement se fait à l'institut.<?php endif; ?> Un e-mail de confirmation vous est envoyé.</p>
     <p>Un créneau choisi reste bloqué pendant <?= EXPIRATION_ATTENTE ?> minutes le temps de confirmer. Passé ce délai sans confirmation, il redevient disponible.</p>
     <p>Les prix sont indiqués en francs CFA (FCFA), toutes taxes comprises. Le prix applicable est celui affiché au moment de la réservation.</p>
 
+    <?php if (acompte_en_ligne_actif()): ?>
     <h2>2. Acompte en ligne</h2>
     <p>L'acompte est <strong>facultatif</strong>. Il est payé par Mobile Money (MTN MoMo, Moov Money) ou carte bancaire via notre prestataire de paiement FedaPay. Nous ne recevons ni ne conservons vos coordonnées bancaires ou votre code Mobile Money.</p>
     <p>Le solde est réglé à l'institut le jour du rendez-vous. Vous pouvez aussi payer l'acompte plus tard depuis votre compte, tant que le rendez-vous n'a pas eu lieu.</p>
+
+    <?php else: ?>
+    <h2>2. Règlement</h2>
+    <p>Le règlement s'effectue à l'institut, le jour du rendez-vous. Aucun paiement n'est demandé en ligne pour le moment.</p>
+    <?php endif; ?>
 
     <h2>3. Annuler ou déplacer un rendez-vous</h2>
     <p>Vous pouvez annuler ou déplacer votre rendez-vous gratuitement, depuis votre espace « Mon compte », <strong>jusqu'à <?= DELAI_ANNULATION_H ?> heures avant</strong> l'heure prévue.</p>

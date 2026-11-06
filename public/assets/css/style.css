@@ -1108,6 +1108,7 @@ body.sans-defilement .whatsapp-flottant { display: none; }   /* caché quand la 
 .rappel.fait { border-left-color: var(--succes); background: transparent; }
 .rappel .form-rappel { margin: 0; }
 #rappels-whatsapp[hidden] { display: none; }
+.rappels-titre { margin: 18px 0 8px; font-family: var(--police-texte); font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--discret); }
 
 /* Statistiques (admin) */
 .tuile-variation { font-size: .8rem; font-weight: 600; color: var(--encre); margin-top: 2px; }
@@ -1401,3 +1402,26 @@ body.sans-defilement .whatsapp-flottant { display: none; }   /* caché quand la 
     .carrousel-piste { scroll-behavior: auto; }
     .pied-groupe summary::after { transition: none; }   /* les pseudo-éléments ne sont pas couverts par * */
 }
+
+/* ===== Avis des clientes ===== */
+.etoiles { color: #e0a526; letter-spacing: 2px; white-space: nowrap; }
+.etoiles-vides { color: #ddd3d9; }
+.etoiles-saisie { display: inline-flex; flex-direction: row-reverse; gap: 4px; }
+.etoiles-saisie input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.etoiles-saisie label { font-size: 2.4rem; line-height: 1; color: #ddd3d9; cursor: pointer; padding: 0 2px; }
+.etoiles-saisie label:hover, .etoiles-saisie label:hover ~ label,
+.etoiles-saisie input:checked ~ label { color: #e0a526; }
+.etoiles-saisie input:focus-visible + label { outline: 2px solid var(--accent); border-radius: 4px; }
+.note-etoiles { border: 0; padding: 0; margin: 0 0 1rem; }
+.note-etoiles legend { font-weight: 600; margin-bottom: .4rem; }
+.accueil-avis { max-width: 1100px; margin: 3rem auto; padding: 0 1rem; text-align: center; }
+.avis-moyenne { display: flex; gap: .6rem; justify-content: center; align-items: center; flex-wrap: wrap; margin: .5rem 0 1.5rem; }
+.avis-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; text-align: left; justify-content: center; }
+.avis-carte { margin: 0; padding: 1.1rem 1.2rem; background: #fff; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+.avis-carte blockquote { margin: .6rem 0; font-style: italic; overflow-wrap: anywhere; }
+.avis-carte figcaption { font-size: .9rem; font-weight: 600; }
+
+/* ===== Interrupteur acompte (admin) ===== */
+section.resa-bloc.bloc-reglage { display: flex; flex-direction: row; gap: 1rem; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 1.5rem; text-align: left; max-width: none; }
+.bloc-reglage h2 { margin: 0 0 .25rem; font-size: 1.05rem; }
+.bloc-reglage p { margin: 0; max-width: 60ch; }
