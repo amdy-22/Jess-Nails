@@ -5,7 +5,7 @@
  */
 
 // Numéro WhatsApp de l'institut. Vide = on reprend SALON_TELEPHONE (config.php).
-const SALON_WHATSAPP = '97000000';                 // ex. '01 97 00 00 00'
+const SALON_WHATSAPP = '62874404';                 // ex. '01 97 00 00 00'
 
 // Position GPS pour la carte, "latitude,longitude" (clic droit sur Google Maps > copier les coordonnées).
 // Vide = pas de carte, juste un lien "Ouvrir dans Google Maps" construit depuis l'adresse.

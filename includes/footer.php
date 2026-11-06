@@ -80,8 +80,6 @@ $utilisateurPied = current_user();
             <a href="<?= BASE_URL ?>/suggestion?depuis=<?= rawurlencode(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/') ?>">Faire une suggestion</a>
         </p>
 
-        <p class="pied-lieu">Cotonou, Bénin</p>
-
         <div class="pied-legal">
             <p>Copyright &copy; <?= date('Y') ?> <?= e(APP_NAME) ?>. Tous droits réservés.</p>
             <nav aria-label="Informations légales">
