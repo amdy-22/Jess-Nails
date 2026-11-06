@@ -57,6 +57,8 @@ require __DIR__ . '/../includes/admin_header.php';
     <?php endif; ?>
 </section>
 
+<?php require_once __DIR__ . '/../includes/avis.php'; echo onglets_messages_avis('messages'); ?>
+
 <nav class="filtres" aria-label="Filtrer">
     <a href="<?= $urlPage ?>" class="pastille<?= $filtre === 'tous' ? ' pastille-active' : '' ?>">Tous</a>
     <a href="<?= $urlPage ?>?filtre=non-lus" class="pastille<?= $filtre === 'non-lus' ? ' pastille-active' : '' ?>">Non lus (<?= $nbNonLus ?>)</a>
