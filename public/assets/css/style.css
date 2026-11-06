@@ -469,8 +469,8 @@ input, select, textarea {
     .admin .nav a, .admin .lien-bouton { font-size: .75rem; }
     .admin .voir-site { display: none; }
 }
-/* Écrans de 1200 à 1760 px (portables et zoom Windows) : icônes gardées, « Voir le site » et « Déconnexion » réduits à leur icône */
-@media (min-width: 1200px) and (max-width: 1760px) {
+/* Écrans de 1200 px et plus (la largeur du menu est fixe, les compteurs peuvent l'élargir) : icônes gardées, « Voir le site » et « Déconnexion » réduits à leur icône */
+@media (min-width: 1200px) {
     .admin .voir-site span, .admin .btn-deconnexion span { display: none; }
     .admin .btn-deconnexion { padding: 7px 10px; }
     .admin .nav { gap: 14px; }
@@ -478,13 +478,18 @@ input, select, textarea {
     .admin .nav-liens a { gap: 5px; }
     .admin .nav a, .admin .lien-bouton { font-size: .85rem; }
 }
+@media (min-width: 1200px) and (max-width: 1280px) {
+    .admin .nav { gap: 10px; }
+    .admin .nav ul { gap: 8px; }
+    .admin .nav a, .admin .lien-bouton { font-size: .8rem; }
+}
 @media (min-width: 761px) and (max-width: 1199px) {
     .admin .nav-liens .icone-trait { display: none; }
     .admin .voir-site span { display: none; }
+    .admin .btn-deconnexion span { display: none; }   /* marge pour les badges de compteur (rappels, messages) */
+    .admin .btn-deconnexion { padding: 7px 9px; }
 }
 @media (min-width: 761px) and (max-width: 1100px) {
-    .admin .btn-deconnexion span { display: none; }
-    .admin .btn-deconnexion { padding: 7px 9px; }
     .admin .avatar { display: none; }
 }
 
@@ -756,10 +761,12 @@ input, select, textarea {
     margin-bottom: 20px;
 }
 .liste-soins {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;   /* cartes centrées, même quand la dernière ligne est incomplète */
     gap: 20px;
 }
+.liste-soins > .carte-soin { flex: 1 1 300px; max-width: 360px; }
 .carte-soin {
     display: flex;
     flex-direction: column;
