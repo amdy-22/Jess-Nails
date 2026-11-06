@@ -15,6 +15,7 @@ $categories = db()->query(
 )->fetchAll();
 
 $dernieresPhotos = photos_visibles(null, 10);
+
 $pageTitle  = 'Accueil';
 $activePage = 'accueil';
 require __DIR__ . '/../includes/header.php';
@@ -22,7 +23,7 @@ require __DIR__ . '/../includes/header.php';
 
 <section class="accueil-intro">
     <h1>Prenez soin de vous, on s'occupe du reste.</h1>
-    <p>Soins du visage, manucure et pédicure. Choisissez votre soin et votre créneau en ligne, puis réglez sur place ou par Mobile Money.</p>
+    <p>Soins du visage, manucure et pédicure. Choisissez votre soin et votre créneau en ligne, puis <?= acompte_en_ligne_actif() ? 'réglez sur place ou par Mobile Money' : 'réglez sur place le jour du rendez-vous' ?>.</p>
     <div class="actions">
         <a href="<?= BASE_URL ?>/reserver" class="btn btn-plein">Réserver une séance</a>
         <a href="<?= BASE_URL ?>/prestations" class="btn">Voir les prestations</a>
@@ -66,4 +67,30 @@ require __DIR__ . '/../includes/header.php';
         </div>
     </section>
 <?php endif; ?>
-<?php require __DIR__ . '/../includes/footer.php';?>
+
+<?php
+require_once __DIR__ . '/../includes/avis.php';
+$resumeAvis = avis_resume();
+if ($resumeAvis['nombre'] > 0):
+    $avisAccueil = avis_publies(6);
+?>
+    <section class="accueil-avis" aria-labelledby="titre-avis">
+        <h2 id="titre-avis">Elles en parlent</h2>
+        <p class="avis-moyenne">
+            <?= etoiles_html((int) round($resumeAvis['moyenne'])) ?>
+            <strong><?= e(str_replace('.', ',', (string) $resumeAvis['moyenne'])) ?> / 5</strong>
+            <span class="discret">sur <?= $resumeAvis['nombre'] ?> avis</span>
+        </p>
+        <div class="avis-grille">
+            <?php foreach ($avisAccueil as $a): ?>
+                <figure class="avis-carte">
+                    <?= etoiles_html((int) $a['note']) ?>
+                    <?php if ($a['commentaire']): ?><blockquote><?= nl2br(e($a['commentaire'])) ?></blockquote><?php endif; ?>
+                    <figcaption><?= e(nom_public($a['prenom'], $a['nom'])) ?> <span class="discret">· <?= e($a['soin']) ?></span></figcaption>
+                </figure>
+            <?php endforeach; ?>
+        </div>
+    </section>
+<?php endif; ?>
+
+<?php require __DIR__ . '/../includes/footer.php';

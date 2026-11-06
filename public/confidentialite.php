@@ -24,7 +24,9 @@ require __DIR__ . '/../includes/header.php';
     <ul>
         <li><strong>Compte client</strong> : prénom, nom, e-mail, téléphone, mot de passe (enregistré chiffré, jamais lisible).</li>
         <li><strong>Rendez-vous</strong> : soin, date, praticienne, précision éventuelle que vous saisissez.</li>
+        <?php if (acompte_en_ligne_actif()): ?>
         <li><strong>Paiement</strong> : montant, statut et référence de la transaction FedaPay. Nous ne voyons ni ne stockons vos numéros de carte ou codes Mobile Money.</li>
+        <?php endif; ?>
     </ul>
     <p>Évitez de saisir des informations médicales détaillées dans le champ « Une précision ? » : indiquez simplement ce que la praticienne doit savoir (ex. « peau sensible »).</p>
 
@@ -38,7 +40,7 @@ require __DIR__ . '/../includes/header.php';
     <p>Aucune publicité, aucune revente de données, aucun envoi commercial sans votre accord.</p>
 
     <h2>Qui y a accès</h2>
-    <p>L'équipe de l'institut, et uniquement pour ce qui la concerne, nos prestataires : alwaysdata (hébergement, France), Brevo (envoi des e-mails, France) et FedaPay (paiement, Bénin). Certaines données sont donc hébergées en France, pays disposant d'une législation protectrice des données personnelles.</p>
+    <p>L'équipe de l'institut, et uniquement pour ce qui la concerne, nos prestataires : alwaysdata (hébergement, France)<?= acompte_en_ligne_actif() ? ', Brevo (envoi des e-mails, France) et FedaPay (paiement, Bénin)' : ' et Brevo (envoi des e-mails, France)' ?>. Certaines données sont donc hébergées en France, pays disposant d'une législation protectrice des données personnelles.</p>
 
     <h2>Durée de conservation</h2>
     <ul>

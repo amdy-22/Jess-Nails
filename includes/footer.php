@@ -85,7 +85,7 @@ $utilisateurPied = current_user();
             <nav aria-label="Informations légales">
                 <a href="<?= BASE_URL ?>/conditions">Conditions de réservation</a>
                 <a href="<?= BASE_URL ?>/confidentialite">Confidentialité</a>
-                <a href="<?= BASE_URL ?>/mentions-legales">Mentions légales</a>
+                <a href="<?= BASE_URL ?>/#">Mentions légales</a>
                 <a href="<?= BASE_URL ?>/contact">Contact</a>
             </nav>
         </div>

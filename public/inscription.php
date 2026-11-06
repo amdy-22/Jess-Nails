@@ -135,7 +135,7 @@ require __DIR__ . '/../includes/header.php';
         </div>
 
         <div class="champ">
-            <label for="telephone">Téléphone (Mobile Money)</label>
+            <label for="telephone"><?= acompte_en_ligne_actif() ? 'Téléphone (Mobile Money)' : 'Téléphone' ?></label>
             <input type="tel" id="telephone" name="telephone" value="<?= old('telephone') ?>"
                    placeholder="01 97 12 34 56" autocomplete="tel" required>
         </div>

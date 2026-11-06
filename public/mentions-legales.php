@@ -33,7 +33,7 @@ require __DIR__ . '/../includes/header.php';
     </dl>
 
     <h2>Prestataires techniques</h2>
-    <p>Paiement en ligne : FedaPay (Cotonou, Bénin). E-mails transactionnels : Brevo (Paris, France). Ces prestataires n'agissent que pour le fonctionnement du service de réservation.</p>
+    <p><?= acompte_en_ligne_actif() ? 'Paiement en ligne : FedaPay (Cotonou, Bénin). ' : '' ?>E-mails transactionnels : Brevo (Paris, France). Ces prestataires n'agissent que pour le fonctionnement du service de réservation.</p>
 
     <h2>Propriété intellectuelle</h2>
     <p>Les textes, photos, logos et la présentation de ce site appartiennent à <?= e(APP_NAME) ?> ou sont utilisés avec autorisation. Toute reproduction sans accord écrit est interdite.</p>
