@@ -9,6 +9,7 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/functions.php';
 require_once __DIR__ . '/limites.php';
 require_once __DIR__ . '/parametres.php';
+require_once __DIR__ . '/journal.php';
 
 // ---------- Session sécurisée ----------
 if (session_status() === PHP_SESSION_NONE) {
@@ -145,4 +146,5 @@ function require_admin(): void
         require __DIR__ . '/footer.php';
         exit;
     }
+    journal_demarrer();   // journal d'activité : enregistre toute action (POST) faite depuis l'admin
 }

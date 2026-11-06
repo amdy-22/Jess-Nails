@@ -50,6 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     limite_effacer('connexion_email', $email);
     clear_old();
     login_user($user);
+    if ($user['role'] === 'admin') {
+        journal_enregistrer($user, 'connexion', 'connexion', 'succes', 'Connexion à l\'administration.');
+    }
     flash('succes', 'Bonjour ' . $user['prenom'] . ' !');
 
     $parDefaut = $user['role'] === 'admin' ? ADMIN_URL . '/' : BASE_URL . '/';
