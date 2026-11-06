@@ -9,7 +9,7 @@ avec acompte facultatif par Mobile Money (FedaPay) et emails (Brevo).
 admin/      espace d'administration (tableau de bord, réservations, soins, praticiennes, horaires)
 config/     configuration (config.php = privé, config.example.php = modèle)
 includes/   code partagé (connexion, sessions, réservation, paiement, emails)
-logs/       journaux et emails enregistrés en local (non versionné)
+logs/       journaux (admin.log = actions de l'admin, sauvegarde.log, rappels.log) et emails en local (non versionné)
 public/     pages visibles par les clientes
 sql/        schéma de la base et scripts
 ```
@@ -46,3 +46,17 @@ gzip -dc base_AAAA-MM-JJ_HH-MM.sql.gz | mysql --default-character-set=utf8mb4 -h
 Les tentatives de connexion, d'inscription, de mot de passe oublié et de suggestion sont comptées
 en base (`limites_requetes`, migration `sql/etape23_limites.sql`). Réglages dans `public/connexion.php`
 (constantes `LIMITE_*`) et dans les autres pages.
+
+## Journal des actions de l'administration (développeur)
+
+Chaque action faite depuis l'admin (enregistrer, supprimer, annuler, connexion...) est écrite en une ligne dans `logs/admin.log` :
+date, qui, adresse IP, section, action, résultat (OK ou ECHEC), description et valeurs envoyées (jamais de mot de passe).
+Le dossier `logs/` est fermé au web et non versionné. Rien n'est visible dans l'administration.
+
+```bash
+tail -n 50 ~/www/jess-nails/logs/admin.log          # dernières actions
+grep ECHEC ~/www/jess-nails/logs/admin.log           # actions refusées ou en erreur
+grep "prestations" ~/www/jess-nails/logs/admin.log   # une section
+```
+
+Le fichier passe en `admin.log.1` au-delà de 2 Mo (un seul ancien fichier est conservé).
